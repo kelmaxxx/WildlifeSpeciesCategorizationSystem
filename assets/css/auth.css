@@ -1,0 +1,102 @@
+/* auth.css — login, register, confirm dialogs */
+
+.auth-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(60,179,113,.2), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(124,58,237,.15), transparent 50%),
+    var(--slate-50);
+  padding: 1.5rem;
+}
+.auth-card {
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--slate-100);
+  width: 100%;
+  max-width: 420px;
+}
+.auth-card .logo-lg {
+  width: 56px; height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 16px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--green-500), var(--green-700));
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.auth-card h1 {
+  margin: 0 0 .25rem;
+  text-align: center;
+  font-size: 1.4rem;
+}
+.auth-card p.lead {
+  text-align: center;
+  color: var(--slate-500);
+  margin: 0 0 1.5rem;
+  font-size: .92rem;
+}
+.auth-card .auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: .85rem;
+  color: var(--slate-500);
+}
+.auth-card .auth-footer a { font-weight: 600; }
+
+/* ---------- Confirm dialog ---------- */
+.confirm-card {
+  max-width: 460px;
+  margin: 4rem auto;
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  border: 1px solid var(--slate-100);
+}
+.confirm-card .icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--rose-100);
+  color: var(--rose);
+  font-size: 1.5rem;
+}
+.confirm-card h2 { margin: 0 0 .5rem; color: var(--slate-900); }
+.confirm-card p { color: var(--slate-500); margin: 0 0 1.5rem; }
+.confirm-actions { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- Form rows used inside auth-card ---------- */
+.auth-card .form-row { margin-bottom: 1rem; }
+.auth-card .form-row label {
+  display: block;
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--slate-700);
+  margin-bottom: .35rem;
+}
+.auth-card .form-row input {
+  width: 100%;
+  padding: .6rem .8rem;
+  border: 1px solid var(--slate-300);
+  border-radius: 8px;
+  font: inherit;
+  transition: border-color .2s, box-shadow .2s;
+}
+.auth-card .form-row input:focus {
+  outline: none;
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 4px rgba(60,179,113,.15);
+}
+.auth-card .form-row .hint {
+  display: block;
+  font-size: .8rem;
+  color: var(--slate-500);
+  margin-top: .35rem;
+}

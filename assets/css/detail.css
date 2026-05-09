@@ -1,0 +1,112 @@
+/* detail.css — species detail page */
+
+.detail-wrap {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1.5rem 4rem;
+}
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: var(--slate-500);
+  font-size: .9rem;
+  margin-bottom: 1rem;
+}
+.detail-back:hover { color: var(--green-700); text-decoration: none; }
+
+.detail-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--slate-100);
+}
+.detail-hero {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background: linear-gradient(135deg, var(--green-100), var(--slate-100));
+  display: grid;
+  place-items: center;
+  color: var(--green-700);
+  font-size: 5rem;
+  overflow: hidden;
+}
+.detail-hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.detail-hero .endangered-banner {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: var(--violet);
+  color: white;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  box-shadow: var(--shadow);
+}
+
+.detail-body {
+  padding: 2rem;
+}
+.detail-body h1 {
+  margin: 0 0 .25rem;
+  font-size: 2rem;
+  letter-spacing: -.5px;
+}
+.detail-body em {
+  display: block;
+  color: var(--slate-500);
+  font-size: 1.05rem;
+  margin-bottom: 1.25rem;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--slate-100);
+}
+.detail-grid .field {
+  background: var(--slate-50);
+  border-radius: 10px;
+  padding: .85rem 1rem;
+}
+.detail-grid .field .label {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--slate-500);
+  margin-bottom: .25rem;
+}
+.detail-grid .field .value {
+  font-weight: 600;
+  color: var(--slate-900);
+}
+
+.related-section {
+  margin-top: 3rem;
+}
+.related-section h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+  color: var(--slate-900);
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .detail-hero { height: 240px; font-size: 3rem; }
+  .detail-body { padding: 1.5rem; }
+  .detail-body h1 { font-size: 1.5rem; }
+}
