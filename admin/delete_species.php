@@ -14,6 +14,7 @@ if (!$species) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm'])) {
+    csrf_check();
     $name = $species->name ?? '(unnamed)';
     $db->delete('species', ['_id' => $id]);
     log_activity($db, 'delete', 'species', $name);
@@ -29,6 +30,7 @@ admin_layout_open('Delete Species', 'species');
   <p>You're about to delete <strong><?= htmlspecialchars($species->name) ?></strong>.
      This action cannot be undone.</p>
   <form method="POST" class="confirm-actions">
+    <?= csrf_field() ?>
     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$id) ?>">
     <a href="manage_species.php" class="btn ghost">Cancel</a>
     <button type="submit" name="confirm" value="1" class="btn danger">Yes, delete</button>

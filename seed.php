@@ -2,12 +2,48 @@
 /**
  * One-time seed script. Drops + reinserts every collection so re-running is
  * safe. Use this when you don't have MySQL handy and just want a fully
- * populated MongoDB matching the original SQL dump.
+ * populated MongoDB matching the original SQL dataset.
  *
- * After running: open the public site, login as admin/admin123, then DELETE
- * THIS FILE so it can't be re-triggered.
+ * Safety: a plain GET only shows a confirmation page. The actual drop +
+ * reseed runs only when the user POSTs the confirm form. After running,
+ * DELETE THIS FILE so it can't be re-triggered.
  */
 require_once __DIR__ . '/mongo.php';
+
+$confirmed = $_SERVER['REQUEST_METHOD'] === 'POST'
+          && ($_POST['confirm'] ?? '') === 'YES_RESET_DB';
+
+if (!$confirmed) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <?php $title='Seed database'; $css=['public']; include __DIR__ . '/partials/head.php'; ?>
+    </head>
+    <body>
+    <div style="max-width:640px;margin:4rem auto;padding:2rem;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);font-family:Inter,sans-serif">
+      <h1 style="margin-top:0;color:#92400e">&#9888; Reset the wildlife database?</h1>
+      <p style="color:#475569">
+        This will <strong>drop every collection</strong> (users, categories, habitats,
+        species, activity_log) and reinsert the demo dataset. Any custom data
+        currently in the database will be lost.
+      </p>
+      <p style="color:#475569">
+        After running you should delete <code>seed.php</code> so it can't be re-triggered.
+      </p>
+      <form method="POST" style="margin-top:1.5rem;display:flex;gap:.75rem">
+        <input type="hidden" name="confirm" value="YES_RESET_DB">
+        <a href="index.php" style="padding:.6rem 1rem;border-radius:8px;border:1px solid #cbd5e1;color:#334155;text-decoration:none;font-weight:600">Cancel</a>
+        <button type="submit" style="padding:.6rem 1rem;border-radius:8px;border:none;background:#b91c1c;color:#fff;font-weight:600;cursor:pointer">
+          Drop and reseed
+        </button>
+      </form>
+    </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
 
 // ---------- Drop everything --------------------------------------------------
 $manager = new MongoDB\Driver\Manager(MONGO_URI);
@@ -170,3 +206,5 @@ foreach ($speciesSeed as [$name, $sci, $endangered, $catSqlId, $habSqlId]) {
 </div>
 </body>
 </html>
+
+

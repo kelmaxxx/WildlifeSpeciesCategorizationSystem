@@ -5,6 +5,7 @@ require_once __DIR__ . '/lib/activity.php';
 $ROLES = ['admin', 'uploader', 'user'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $role     = $_POST['role'] ?? 'user';
@@ -46,6 +47,7 @@ admin_layout_open('Add User', 'users');
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
   <form method="POST">
+    <?= csrf_field() ?>
     <div class="form-row">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required autofocus value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">

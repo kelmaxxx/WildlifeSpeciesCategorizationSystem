@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/mongo.php';
+require_once __DIR__ . '/lib/csrf.php';
 
 if (!empty($_SESSION['user_id'])) {
     header('Location: index.php');
@@ -10,6 +11,7 @@ if (!empty($_SESSION['user_id'])) {
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST">
+      <?= csrf_field() ?>
       <div class="form-row">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required autofocus>

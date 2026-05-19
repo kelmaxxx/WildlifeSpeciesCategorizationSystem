@@ -69,19 +69,29 @@ class Mongo
         return $result->getModifiedCount();
     }
 
-    public function delete(string $collection, array $filter): int
+    public function delete(string $collection, array $filter, bool $multi = false): int
     {
         $bulk = new MongoDB\Driver\BulkWrite();
-        $bulk->delete($filter, ['limit' => 1]);
+        $bulk->delete($filter, ['limit' => $multi ? 0 : 1]);
         $result = $this->manager->executeBulkWrite($this->ns($collection), $bulk);
         return $result->getDeletedCount();
     }
 
+    /**
+     * Count documents matching a filter. Uses the aggregation pipeline
+     * (`$match` + `$count`) instead of the legacy `count` command, which is
+     * deprecated since MongoDB 4.0.
+     */
     public function count(string $collection, array $filter = []): int
     {
+        $pipeline = [];
+        if (!empty($filter)) $pipeline[] = ['$match' => $filter];
+        $pipeline[] = ['$count' => 'n'];
+
         $cmd = new MongoDB\Driver\Command([
-            'count' => $collection,
-            'query' => (object) $filter
+            'aggregate' => $collection,
+            'pipeline'  => $pipeline,
+            'cursor'    => (object) [],
         ]);
         $cursor = $this->manager->executeCommand($this->db, $cmd);
         $row = $cursor->toArray()[0] ?? null;

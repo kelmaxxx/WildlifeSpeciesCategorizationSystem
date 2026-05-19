@@ -16,6 +16,7 @@ $success = null;
 $error   = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $newUsername = trim($_POST['username'] ?? '');
     $current     = $_POST['current_password'] ?? '';
     $newPassword = $_POST['new_password'] ?? '';
@@ -69,6 +70,7 @@ admin_layout_open('My Profile', 'profile');
   <?php endif; ?>
 
   <form method="POST">
+    <?= csrf_field() ?>
     <div class="form-row">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required value="<?= htmlspecialchars($me->username ?? '') ?>">

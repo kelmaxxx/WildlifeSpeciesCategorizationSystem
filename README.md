@@ -60,14 +60,13 @@ Verify it's running:
 
 Verify: `C:\xampp\php\php.exe -m | findstr mongodb`
 
-### 3. Migrate / seed the database
-Open <http://localhost/wildlife_categorization/migrate.php>:
-- If MySQL is reachable on port 3307 → reads `wildlife_categorization` and
-  copies users/categories/habitats/species into MongoDB (denormalized).
-- If MySQL is unreachable → seeds a minimal dataset: `admin / admin123` plus
-  the 3 default categories.
+### 3. Seed the database
+Open <http://localhost/wildlife_categorization/seed.php>. You'll get a
+confirmation page first; click **Drop and reseed** to drop every collection
+and reinsert the demo dataset (`admin / admin123`, `uploader_jane /
+password123`, 3 categories, 12 habitats, 50 species).
 
-Re-running the script is safe: it drops + reinserts. **Delete `migrate.php`
+Re-running the script is safe: it drops + reinserts. **Delete `seed.php`
 after a successful run** so it can't be re-triggered.
 
 ### 4. Open the site
@@ -84,7 +83,9 @@ after a successful run** so it can't be re-triggered.
 wildlife_categorization/
 ├── config.php              MongoDB URI + DB name
 ├── mongo.php               Mongo helper class
-├── migrate.php             ONE-TIME seeder — delete after use
+├── seed.php                ONE-TIME seeder — POST-with-confirm guarded; delete after use
+├── public_auth.php         Session guard for logged-in user pages
+├── lib/csrf.php            CSRF token helpers (csrf_field / csrf_check)
 ├── index.php               Public catalog (search · filter · sort · pagination)
 ├── species_detail.php      Species detail page + related strip
 ├── register.php            Public account sign-up
@@ -94,7 +95,8 @@ wildlife_categorization/
 ├── my_submissions.php      User's own submissions + status
 │
 ├── partials/
-│   └── head.php            Shared <head> block (title + Inter font + CSS imports)
+│   ├── head.php            Shared <head> block (title + Inter font + CSS imports)
+│   └── topbar.php          Shared public topbar (logged-in vs. logged-out)
 │
 ├── assets/css/
 │   ├── base.css            Variables, reset, buttons, badges, alerts
@@ -177,12 +179,17 @@ wildlife_categorization/
 
 - Passwords stored only as bcrypt hashes (`password_hash` /
   `password_verify`).
-- Admin pages all guarded by `auth.php` — non-admin sessions redirect to
-  the admin login.
+- Admin pages all guarded by `admin/auth.php`; public protected pages by
+  `public_auth.php`. Both bounce unauthenticated users to login.
+- **CSRF tokens** on every mutating form (admin + public) via `lib/csrf.php` —
+  forms emit `csrf_field()`, handlers call `csrf_check()` before processing.
 - Public submissions land in `pending`; only an admin approval surfaces them
   on the public catalog.
 - Self-deletion blocked on the user management page.
 - `session_regenerate_id(true)` on login to mitigate fixation.
+- `seed.php` requires an explicit POST with a confirm token before dropping
+  any data — a casual `GET /seed.php` only shows a confirmation page.
+- `image_url` values rejected unless they start with `http://` or `https://`.
 
 ---
 
@@ -195,11 +202,7 @@ not in `php.ini`. Restart Apache after editing.
 it via Services (`services.msc` → MongoDB Server) or
 `net start MongoDB`.
 
-**Migration says MySQL connection failed** — `migrate.php` connects on port
-3307 (XAMPP custom). The script falls back to seeding `admin / admin123` in
-that case, so you can still log in.
-
-**Forgot the admin password** — re-run `migrate.php` (it re-seeds
+**Forgot the admin password** — re-run `seed.php` (it re-seeds
 `admin / admin123`) or set a new hash in `mongosh`:
 ```js
 use wildlife_categorization

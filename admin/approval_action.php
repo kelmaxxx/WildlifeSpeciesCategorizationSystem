@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: manage_approvals.php');
     exit;
 }
+csrf_check();
 
 $id       = Mongo::oid($_POST['id'] ?? null);
 $decision = $_POST['decision'] ?? '';

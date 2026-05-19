@@ -78,25 +78,11 @@ $baseParams = [
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo">&#127757;</span>
-    Wildlife Explorer
-  </div>
-  <nav>
-    <a class="btn ghost" href="#species">Browse</a>
-    <?php if (!empty($_SESSION['user_id'])): ?>
-      <span class="greeting">Hi, <strong><?= htmlspecialchars($_SESSION['user_name'] ?? '') ?></strong></span>
-      <a class="btn ghost" href="my_submissions.php">My submissions</a>
-      <a class="btn" href="submit_species.php">Submit species</a>
-      <a class="btn ghost" href="logout.php">Logout</a>
-    <?php else: ?>
-      <a class="btn ghost" href="login.php">Sign in</a>
-      <a class="btn ghost" href="register.php">Register</a>
-      <a class="btn" href="admin/login.php">Admin</a>
-    <?php endif; ?>
-  </nav>
-</header>
+<?php
+$topbar_show_greeting = true;
+$topbar_browse_href   = '#species';
+include __DIR__ . '/partials/topbar.php';
+?>
 
 <section class="hero">
   <h1>Discover, classify and protect wildlife</h1>

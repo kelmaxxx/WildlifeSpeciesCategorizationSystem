@@ -14,6 +14,7 @@ if (!$cat) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $name = trim($_POST['category_name'] ?? '');
     if ($name === '') {
         $error = 'Category name is required.';
@@ -43,6 +44,7 @@ admin_layout_open('Edit Category', 'categories');
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
   <form method="POST">
+    <?= csrf_field() ?>
     <div class="form-row">
       <label for="category_name">Category name</label>
       <input type="text" id="category_name" name="category_name"

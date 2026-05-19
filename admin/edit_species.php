@@ -17,6 +17,7 @@ $categories = $db->find('categories', [], ['sort' => ['name' => 1]]);
 $habitats   = $db->find('habitats',   [], ['sort' => ['name' => 1]]);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $name      = trim($_POST['species_name'] ?? '');
     $sci       = trim($_POST['scientific_name'] ?? '');
     $catId     = Mongo::oid($_POST['category_id'] ?? null);
@@ -26,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name === '' || !$catId || !$habId) {
         $error = 'Name, category and habitat are required.';
+    } elseif ($imgUrl !== '' && !preg_match('#^https?://#i', $imgUrl)) {
+        $error = 'Image URL must start with http:// or https://.';
     } else {
         $cat = $db->findById('categories', $catId);
         $hab = $db->findById('habitats',   $habId);
@@ -68,6 +71,7 @@ admin_layout_open('Edit Species', 'species');
   <?php endif; ?>
 
   <form method="POST">
+    <?= csrf_field() ?>
     <div class="form-row">
       <label for="species_name">Species name</label>
       <input type="text" id="species_name" name="species_name"

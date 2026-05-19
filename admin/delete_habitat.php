@@ -16,6 +16,7 @@ if (!$hab) {
 $speciesUsing = $db->count('species', ['habitat_id' => $id]);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm'])) {
+    csrf_check();
     if ($speciesUsing > 0) {
         $error = "Cannot delete: $speciesUsing species are still using this habitat.";
     } else {
@@ -42,6 +43,7 @@ admin_layout_open('Delete Habitat', 'habitats');
   <?php endif; ?>
 
   <form method="POST" class="confirm-actions">
+    <?= csrf_field() ?>
     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$id) ?>">
     <a href="manage_habitats.php" class="btn ghost">Cancel</a>
     <button type="submit" name="confirm" value="1" class="btn danger" <?= $speciesUsing > 0 ? 'disabled style="opacity:.6;cursor:not-allowed"' : '' ?>>

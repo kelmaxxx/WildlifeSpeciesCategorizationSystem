@@ -1,11 +1,6 @@
 <?php
-session_start();
-require_once __DIR__ . '/mongo.php';
-
-if (empty($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once __DIR__ . '/public_auth.php';
+require_user();
 
 $me = Mongo::oid($_SESSION['user_id']);
 $submissions = $me ? $db->find('species', ['uploader_id' => $me], ['sort' => ['created_at' => -1]]) : [];
@@ -19,17 +14,7 @@ $justSubmitted = isset($_GET['submitted']);
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo">&#127757;</span>
-    Wildlife Explorer
-  </div>
-  <nav>
-    <a class="btn ghost" href="index.php">Browse</a>
-    <a class="btn" href="submit_species.php">Submit species</a>
-    <a class="btn ghost" href="logout.php">Logout</a>
-  </nav>
-</header>
+<?php $topbar_active = 'submissions'; include __DIR__ . '/partials/topbar.php'; ?>
 
 <main style="max-width:1000px;margin:2rem auto;padding:0 1.5rem 4rem">
   <h1 style="margin-bottom:.25rem">My submissions</h1>

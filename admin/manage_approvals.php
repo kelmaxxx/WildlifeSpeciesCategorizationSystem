@@ -52,11 +52,13 @@ admin_layout_open('Pending Approvals', 'approvals');
             <div class="actions">
               <a class="view" href="edit_species.php?id=<?= urlencode($sid) ?>">View</a>
               <form method="POST" action="approval_action.php" style="display:inline">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
                 <input type="hidden" name="decision" value="approve">
                 <button type="submit" class="approve">Approve</button>
               </form>
               <form method="POST" action="approval_action.php" style="display:inline">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
                 <input type="hidden" name="decision" value="reject">
                 <button type="submit" class="reject">Reject</button>

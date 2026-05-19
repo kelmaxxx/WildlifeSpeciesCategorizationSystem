@@ -1,19 +1,14 @@
 <?php
-session_start();
-require_once __DIR__ . '/mongo.php';
-
-if (empty($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once __DIR__ . '/public_auth.php';
+require_user();
 
 $categories = $db->find('categories', [], ['sort' => ['name' => 1]]);
 $habitats   = $db->find('habitats',   [], ['sort' => ['name' => 1]]);
 
 $error   = null;
-$success = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $name       = trim($_POST['species_name'] ?? '');
     $sci        = trim($_POST['scientific_name'] ?? '');
     $catId      = Mongo::oid($_POST['category_id'] ?? null);
@@ -23,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name === '' || !$catId || !$habId) {
         $error = 'Name, category and habitat are required.';
+    } elseif ($imgUrl !== '' && !preg_match('#^https?://#i', $imgUrl)) {
+        $error = 'Image URL must start with http:// or https://.';
     } else {
         $cat = $db->findById('categories', $catId);
         $hab = $db->findById('habitats',   $habId);
@@ -54,17 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo">&#127757;</span>
-    Wildlife Explorer
-  </div>
-  <nav>
-    <a class="btn ghost" href="index.php">Browse</a>
-    <a class="btn ghost" href="my_submissions.php">My submissions</a>
-    <a class="btn ghost" href="logout.php">Logout</a>
-  </nav>
-</header>
+<?php $topbar_active = 'submit'; include __DIR__ . '/partials/topbar.php'; ?>
 
 <main style="max-width:720px;margin:2rem auto;padding:0 1.5rem 4rem">
   <h1 style="margin-bottom:.25rem">Submit a species</h1>
@@ -76,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST">
+      <?= csrf_field() ?>
       <div class="form-row">
         <label for="species_name">Species name</label>
         <input type="text" id="species_name" name="species_name" required

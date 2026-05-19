@@ -14,6 +14,7 @@ if (!$hab) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
     $name     = trim($_POST['habitat_name'] ?? '');
     $location = trim($_POST['habitat_location'] ?? '');
 
@@ -51,6 +52,7 @@ admin_layout_open('Edit Habitat', 'habitats');
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
   <form method="POST">
+    <?= csrf_field() ?>
     <div class="form-row">
       <label for="habitat_name">Habitat name</label>
       <input type="text" id="habitat_name" name="habitat_name"

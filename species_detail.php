@@ -53,23 +53,7 @@ $img = $species->image_url ?? '';
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo">&#127757;</span>
-    Wildlife Explorer
-  </div>
-  <nav>
-    <a class="btn ghost" href="index.php">Browse</a>
-    <?php if (!empty($_SESSION['user_id'])): ?>
-      <a class="btn ghost" href="my_submissions.php">My submissions</a>
-      <a class="btn" href="submit_species.php">Submit species</a>
-      <a class="btn ghost" href="logout.php">Logout</a>
-    <?php else: ?>
-      <a class="btn ghost" href="login.php">Sign in</a>
-      <a class="btn" href="admin/login.php">Admin</a>
-    <?php endif; ?>
-  </nav>
-</header>
+<?php include __DIR__ . '/partials/topbar.php'; ?>
 
 <main class="detail-wrap">
   <a class="detail-back" href="index.php">&larr; Back to catalog</a>

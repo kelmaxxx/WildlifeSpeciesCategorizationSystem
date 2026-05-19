@@ -16,6 +16,7 @@ if (!$user) {
 $isMe = (string) $id === ($_SESSION['admin_id'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm']) && !$isMe) {
+    csrf_check();
     $name = $user->username;
     $db->delete('users', ['_id' => $id]);
     log_activity($db, 'delete', 'user', $name);
@@ -38,6 +39,7 @@ admin_layout_open('Delete User', 'users');
   <?php endif; ?>
 
   <form method="POST" class="confirm-actions">
+    <?= csrf_field() ?>
     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$id) ?>">
     <a href="manage_users.php" class="btn ghost">Cancel</a>
     <button type="submit" name="confirm" value="1" class="btn danger" <?= $isMe ? 'disabled style="opacity:.6;cursor:not-allowed"' : '' ?>>
