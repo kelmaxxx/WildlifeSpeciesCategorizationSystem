@@ -44,14 +44,14 @@ body { font-size: 14px; min-height: 100vh; }
 }
 .sb-brand .mark::after {
   content: ""; position: absolute; inset: 4px;
-  background: var(--oriole); border-radius: 50%;
+  background: var(--forest); border-radius: 50%;
 }
 .sb-brand .wordmark { font-family: var(--serif); font-size: 20px; letter-spacing: -0.01em; color: var(--ink); }
 .sb-brand .role {
   font-family: var(--mono); font-size: 9px;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--oriole-deep);
-  padding: 2px 6px; border: 1px solid var(--oriole-deep);
+  color: var(--forest-deep);
+  padding: 2px 6px; border: 1px solid var(--forest-deep);
   border-radius: var(--r-sm);
   align-self: center; margin-left: auto;
 }
@@ -68,12 +68,12 @@ body { font-size: 14px; min-height: 100vh; }
   color: var(--ink-soft); font-size: 13.5px;
   transition: all 0.15s ease; cursor: pointer;
 }
-.sb-nav-item:hover { background: var(--cream-deep); color: var(--ink); }
+.sb-nav-item:hover { background: var(--surface-2); color: var(--ink); }
 .sb-nav-item[aria-current="page"] {
   background: var(--ink); color: var(--paper);
 }
 .sb-nav-item[aria-current="page"] .badge-mini {
-  background: var(--oriole); color: #fff; border-color: var(--oriole);
+  background: var(--forest); color: #fff; border-color: var(--forest);
 }
 .sb-nav-item .glyph {
   width: 18px; height: 18px;
@@ -90,8 +90,8 @@ body { font-size: 14px; min-height: 100vh; }
   color: var(--ink-mute); background: transparent;
 }
 .badge-mini.warn {
-  color: var(--oriole-deep); border-color: var(--oriole-deep);
-  background: color-mix(in oklab, var(--oriole) 10%, transparent);
+  color: var(--forest-deep); border-color: var(--forest-deep);
+  background: color-mix(in oklab, var(--forest) 10%, transparent);
 }
 
 .sb-spacer { flex: 1; }
@@ -102,7 +102,7 @@ body { font-size: 14px; min-height: 100vh; }
 }
 .sb-user .av {
   width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--oriole), var(--berry));
+  background: linear-gradient(135deg, var(--forest), #8b2c2c);
   color: #fff; display: flex; align-items: center; justify-content: center;
   font-family: var(--serif); font-style: italic; font-size: 15px;
 }
@@ -165,7 +165,7 @@ body { font-size: 14px; min-height: 100vh; }
   cursor: pointer; letter-spacing: 0; text-transform: none;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.admin-top .btn-sm:hover { background: var(--oriole-deep); }
+.admin-top .btn-sm:hover { background: var(--forest-deep); }
 
 /* ── 3. Page header ─────────────────────────────────────────────────────── */
 .page-block { padding: 32px 36px 28px; border-bottom: 1px solid var(--rule); }
@@ -174,7 +174,7 @@ body { font-size: 14px; min-height: 100vh; }
   font-size: clamp(40px, 5vw, 64px);
   margin: 8px 0 0; max-width: 900px; color: var(--ink);
 }
-.page-block h1 i { color: var(--oriole-deep); }
+.page-block h1 i { color: var(--forest-deep); }
 .page-block .greeting {
   text-align: right; color: var(--ink-mute);
   font-size: 14px; text-wrap: pretty; max-width: 260px;
@@ -207,7 +207,7 @@ body { font-size: 14px; min-height: 100vh; }
 .stat .delta {
   font-family: var(--mono); font-size: 11px; color: var(--sage);
 }
-.stat .delta.warn { color: var(--oriole-deep); }
+.stat .delta.warn { color: var(--forest-deep); }
 .stat .action {
   position: absolute; top: 18px; right: 18px;
   font-family: var(--mono); font-size: 10px;
@@ -287,9 +287,9 @@ body { font-size: 14px; min-height: 100vh; }
   content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-mute);
 }
 .ev .what .tag.approved::before { background: var(--status-stable); }
-.ev .what .tag.new::before      { background: var(--oriole); }
+.ev .what .tag.new::before      { background: var(--forest); }
 .ev .what .tag.edited::before   { background: var(--status-vuln); }
-.ev .what .tag.flagged::before  { background: var(--berry); }
+.ev .what .tag.flagged::before  { background: #8b2c2c; }
 
 /* ── 6. Tables ──────────────────────────────────────────────────────────── */
 .tbl { width: 100%; border-collapse: collapse; }
@@ -317,13 +317,13 @@ body { font-size: 14px; min-height: 100vh; }
 .tbl .spec { display: flex; align-items: center; gap: 12px; }
 .tbl .thumb {
   width: 46px; height: 46px; border-radius: var(--r-sm);
-  background: var(--cream-deep); overflow: hidden;
+  background: var(--surface-2); overflow: hidden;
   flex-shrink: 0; position: relative;
   background-image:
     repeating-linear-gradient(135deg,
       color-mix(in oklab, var(--rule) 60%, transparent) 0 1px,
       transparent 1px 8px),
-    linear-gradient(var(--cream-deep), var(--cream-deep));
+    linear-gradient(var(--surface-2), var(--surface-2));
 }
 .tbl .thumb .img { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .tbl .name .common {
@@ -355,7 +355,7 @@ body { font-size: 14px; min-height: 100vh; }
 }
 .tbl .status[data-s="pending"]::before  { background: var(--status-vuln); }
 .tbl .status[data-s="approved"]::before { background: var(--status-stable); }
-.tbl .status[data-s="rejected"]::before { background: var(--berry); }
+.tbl .status[data-s="rejected"]::before { background: #8b2c2c; }
 .tbl .actions { display: flex; gap: 6px; justify-content: flex-end; }
 .act {
   appearance: none; border: 1px solid var(--rule);
@@ -371,8 +371,8 @@ body { font-size: 14px; min-height: 100vh; }
 .act.primary {
   background: var(--ink); color: var(--paper); border-color: var(--ink);
 }
-.act.primary:hover { background: var(--oriole-deep); border-color: var(--oriole-deep); }
-.act.danger:hover { border-color: var(--berry); color: var(--berry); }
+.act.primary:hover { background: var(--forest-deep); border-color: var(--forest-deep); }
+.act.danger:hover { border-color: #8b2c2c; color: #8b2c2c; }
 
 /* ── 7. Full-width block + seg-tabs ─────────────────────────────────────── */
 .block { padding: 32px 36px; border-bottom: 1px solid var(--rule); }

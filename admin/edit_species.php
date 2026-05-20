@@ -61,10 +61,10 @@ admin_layout_open('Edit Species', 'species');
 <header class="admin-top">
   <div>
     <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
-      Catalog · Plate №<?= strtoupper(substr((string) $id, -3)) ?>
+      Catalog · Edit record
     </div>
-    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
-      Edit <i style="color:var(--oriole-deep)"><?= htmlspecialchars($species->name ?? 'species') ?>.</i>
+    <h1 class="display" style="font-family:var(--serif);font-size:44px;line-height:1.05;letter-spacing:-.018em;margin:8px 0 0;color:var(--ink);font-weight:500">
+      Edit <i style="color:var(--forest-deep)"><?= htmlspecialchars($species->name ?? 'species') ?>.</i>
     </h1>
   </div>
   <a href="manage_species.php" class="btn btn-ghost" style="align-self:flex-start">← Back to species</a>

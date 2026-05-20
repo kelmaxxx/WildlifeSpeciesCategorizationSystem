@@ -13,22 +13,22 @@ $canSee     = $species && ($status === 'approved' || $isUploader || $isAdmin);
 
 if (!$canSee) {
     http_response_code(404);
-    $page_title = 'Species not found · Wildlife Catalog';
+    $page_title = 'Species not found — WSCS';
     $page_css   = ['detail.css'];
     include __DIR__ . '/partials/head.php';
     include __DIR__ . '/partials/topbar.php';
     ?>
     <section class="frame">
       <div class="crumb">
-        <a href="index.php">Catalog</a>
+        <a href="index.php">Browse</a>
         <span class="sep">/</span>
         <span class="here">Not found</span>
       </div>
       <div class="empty-state" style="padding:64px 0">
         <div class="placeholder" style="height:240px">
-          <div>No record at this plate.</div>
+          <div>No record at this address.</div>
           <div style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);letter-spacing:0;text-transform:none;margin-top:6px">
-            It may have been removed, or it's still awaiting editorial review.
+            It may have been removed, or it's still awaiting review.
           </div>
         </div>
       </div>
@@ -59,9 +59,6 @@ if (!empty($species->category_id)) {
 }
 
 // ── Display helpers ──────────────────────────────────────────────────────
-function plate_num($id): string {
-    return strtoupper(substr((string) $id, -3));
-}
 function conservation_dot(bool $end): string {
     return $end ? 'endangered' : 'stable';
 }
@@ -72,14 +69,13 @@ function conservation_label(bool $end): string {
 $isEnd   = !empty($species->is_endangered);
 $dot     = conservation_dot($isEnd);
 $label   = conservation_label($isEnd);
-$plate   = plate_num($species->_id);
 $img     = $species->image_url ?? '';
 $created = null;
 if (!empty($species->created_at) && $species->created_at instanceof MongoDB\BSON\UTCDateTime) {
     $created = $species->created_at->toDateTime();
 }
 
-$page_title = ($species->name ?? 'Species') . ' · Plate №' . $plate . ' — Wildlife Catalog';
+$page_title = ($species->name ?? 'Species') . ' — WSCS';
 $page_css   = ['detail.css'];
 include __DIR__ . '/partials/head.php';
 include __DIR__ . '/partials/topbar.php';
@@ -88,7 +84,7 @@ include __DIR__ . '/partials/topbar.php';
 <!-- ─── BREADCRUMB ─────────────────────────────────────────────────────── -->
 <section class="frame">
   <div class="crumb">
-    <a href="index.php">Catalog</a>
+    <a href="index.php">Browse</a>
     <?php if (!empty($species->category_name)): ?>
       <span class="sep">/</span>
       <a href="index.php?diet=<?= urlencode(strtolower($species->category_name)) ?>#catalog"><?= htmlspecialchars($species->category_name) ?></a>
@@ -98,7 +94,7 @@ include __DIR__ . '/partials/topbar.php';
       <a href="index.php?habitat=<?= urlencode($species->habitat_name) ?>#catalog"><?= htmlspecialchars($species->habitat_name) ?></a>
     <?php endif; ?>
     <span class="sep">/</span>
-    <span class="here"><?= htmlspecialchars($species->name ?? 'Specimen') ?></span>
+    <span class="here"><?= htmlspecialchars($species->name ?? 'Species') ?></span>
   </div>
 </section>
 
@@ -108,8 +104,7 @@ include __DIR__ . '/partials/topbar.php';
     <div class="hero-top">
       <div class="plate-mark">
         <span class="dot" aria-hidden="true"></span>
-        Plate №<?= $plate ?> · Field-recorded
-        <?= $created ? htmlspecialchars($created->format('j F Y')) : date('j F Y') ?>
+        Recorded <?= $created ? htmlspecialchars($created->format('j F Y')) : date('j F Y') ?>
       </div>
       <?php if ($status !== 'approved'): ?>
         <span class="status-cap" data-s="vulnerable">
@@ -117,7 +112,7 @@ include __DIR__ . '/partials/topbar.php';
         </span>
       <?php else: ?>
         <span class="status-cap" data-s="<?= $dot ?>">
-          <?= $label ?> · field assessment
+          <?= $label ?>
         </span>
       <?php endif; ?>
     </div>
@@ -151,7 +146,7 @@ include __DIR__ . '/partials/topbar.php';
 
       <div class="first">
         <p>
-          Cataloged under plate №<?= $plate ?>, this entry covers a
+          This entry covers a
           <?= htmlspecialchars(strtolower($species->category_name ?? 'species')) ?>
           observed across <?= htmlspecialchars($species->habitat_name ?? 'multiple habitats') ?>.
           <?= $isEnd
@@ -168,7 +163,7 @@ include __DIR__ . '/partials/topbar.php';
         <?php endif; ?>
       </div>
 
-      <h3><span class="num">§ 02 — Notes</span>Field summary</h3>
+      <h3>Field summary</h3>
       <ul>
         <li><strong>Common name —</strong> <?= htmlspecialchars($species->name ?? '—') ?></li>
         <li><strong>Scientific name —</strong> <em><?= htmlspecialchars($species->scientific_name ?? '—') ?></em></li>
@@ -219,11 +214,12 @@ include __DIR__ . '/partials/topbar.php';
       <?php endif; ?>
 
       <div class="meta-section">
-        <h4>Editorial</h4>
+        <h4>Record</h4>
         <dl class="meta-list">
-          <dt>Plate №</dt><dd><?= $plate ?></dd>
           <dt>Status</dt><dd><?= htmlspecialchars(ucfirst($status)) ?></dd>
-          <dt>Volume</dt><dd>Vol. III · <?= date('Y') ?></dd>
+          <?php if ($created): ?>
+            <dt>Catalogued</dt><dd><?= htmlspecialchars($created->format('j M Y')) ?></dd>
+          <?php endif; ?>
         </dl>
       </div>
     </aside>
@@ -236,8 +232,8 @@ include __DIR__ . '/partials/topbar.php';
   <div class="adjacent">
     <div class="section-head">
       <div>
-        <div class="eyebrow">Adjacent in the catalog</div>
-        <h2 class="display">Closely related specimens.</h2>
+        <div class="eyebrow">Related species</div>
+        <h2 class="display">Same category.</h2>
       </div>
       <p class="desc">
         Other <?= htmlspecialchars(strtolower($species->category_name ?? 'species')) ?> entries recorded in the catalog.
@@ -249,7 +245,6 @@ include __DIR__ . '/partials/topbar.php';
           $rEnd  = !empty($r->is_endangered);
           $rDot  = conservation_dot($rEnd);
           $rHasPhoto = !empty($r->image_url);
-          $rPlate = plate_num($r->_id);
       ?>
         <a class="card" href="species_detail.php?id=<?= urlencode((string) $r->_id) ?>" tabindex="0">
           <div class="card-img<?= $rHasPhoto ? ' has-photo' : '' ?>">
@@ -258,14 +253,12 @@ include __DIR__ . '/partials/topbar.php';
             <?php else: ?>
               <div class="placeholder">
                 <div class="silhouette" aria-hidden="true"></div>
-                <div>Plate №<?= $rPlate ?></div>
                 <div style="font-family:var(--serif);font-style:italic;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-soft)">
                   <?= htmlspecialchars($r->scientific_name ?? '') ?>
                 </div>
                 <div style="margin-top:6px;color:var(--ink-mute)">Photograph forthcoming</div>
               </div>
             <?php endif; ?>
-            <span class="num-tag">№<?= $rPlate ?></span>
             <span class="status-dot" data-s="<?= $rDot ?>" title="<?= conservation_label($rEnd) ?>"></span>
           </div>
           <div>

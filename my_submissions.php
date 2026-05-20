@@ -17,11 +17,7 @@ foreach ($submissions as $s) {
     if (isset($counts[$st])) $counts[$st]++;
 }
 
-function plate_num($id): string {
-    return strtoupper(substr((string) $id, -3));
-}
-
-$page_title = 'My submissions — Wildlife Catalog';
+$page_title = 'My submissions — WSCS';
 $page_css   = ['admin.css'];
 include __DIR__ . '/partials/head.php';
 include __DIR__ . '/partials/topbar.php';
@@ -29,19 +25,19 @@ include __DIR__ . '/partials/topbar.php';
 
 <section class="frame">
   <div class="crumb">
-    <a href="index.php">Catalog</a>
+    <a href="index.php">Browse</a>
     <span class="sep">/</span>
     <span class="here">My submissions</span>
   </div>
 
   <div class="page-head">
     <div>
-      <div class="eyebrow">Contributor desk</div>
+      <div class="eyebrow">Your contributions</div>
       <h1 class="display">Your <i class="accent">submissions.</i></h1>
     </div>
     <p class="intro">
-      Every species you've sent to the catalog, with its current editorial status.
-      Pending entries are awaiting review; approved ones are live on the public index.
+      Every species you've sent to the catalog, with its current review status.
+      Pending entries are awaiting review; approved ones are live in the public catalog.
     </p>
   </div>
 
@@ -70,7 +66,7 @@ include __DIR__ . '/partials/topbar.php';
     <div class="stat">
       <div class="num"><?= $counts['rejected'] ?></div>
       <div class="label">Rejected</div>
-      <div class="delta" style="color:var(--berry)">Needs revision</div>
+      <div class="delta" style="color:#8b2c2c">Needs revision</div>
     </div>
   </div>
 
@@ -82,7 +78,7 @@ include __DIR__ . '/partials/topbar.php';
           When you contribute a species, it will appear here.
         </div>
         <a href="submit_species.php" class="btn btn-primary" style="margin-top:18px">
-          Contribute a specimen <span class="arrow" aria-hidden="true"></span>
+          Contribute a species <span class="arrow" aria-hidden="true"></span>
         </a>
       </div>
     </div>
@@ -90,8 +86,7 @@ include __DIR__ . '/partials/topbar.php';
     <table class="tbl">
       <thead>
         <tr>
-          <th class="num">Plate</th>
-          <th>Specimen</th>
+          <th>Species</th>
           <th>Diet</th>
           <th>Habitat</th>
           <th>Submitted</th>
@@ -102,13 +97,11 @@ include __DIR__ . '/partials/topbar.php';
         <?php foreach ($submissions as $s):
           $status = $s->approval_status ?? 'pending';
           $sid    = (string) $s->_id;
-          $plate  = plate_num($s->_id);
           $when   = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
                   ? $s->created_at->toDateTime()->format('j M Y') : '—';
           $img    = $s->image_url ?? '';
         ?>
           <tr>
-            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
               <div class="spec">
                 <div class="thumb">

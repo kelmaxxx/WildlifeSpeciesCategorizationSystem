@@ -13,20 +13,16 @@ $pending  = $db->find('species', ['approval_status' => 'pending'], ['sort' => ['
 $recent   = $db->find('species', ['approval_status' => 'approved'], ['sort' => ['_id' => -1], 'limit' => 6]);
 $activity = $db->find('activity_log', [], ['sort' => ['created_at' => -1], 'limit' => 8]);
 
-function plate_num($id): string {
-    return strtoupper(substr((string) $id, -3));
-}
-
 admin_layout_open('Dashboard', 'dashboard');
 ?>
 
 <header class="admin-top">
   <div>
     <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
-      Editor's desk · <?= date('l, j F Y') ?>
+      Editor · <?= date('l, j F Y') ?>
     </div>
-    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
-      Welcome back, <i style="color:var(--oriole-deep)"><?= htmlspecialchars($_SESSION['admin_username'] ?? 'admin') ?></i>.
+    <h1 class="display" style="font-family:var(--serif);font-size:44px;line-height:1.05;letter-spacing:-.018em;margin:8px 0 0;color:var(--ink);font-weight:500">
+      Welcome back, <i style="color:var(--forest-deep)"><?= htmlspecialchars($_SESSION['admin_username'] ?? 'admin') ?></i>.
     </h1>
   </div>
 </header>
@@ -71,8 +67,7 @@ admin_layout_open('Dashboard', 'dashboard');
     <table class="tbl">
       <thead>
         <tr>
-          <th class="num">Plate</th>
-          <th>Specimen</th>
+          <th>Species</th>
           <th>Diet</th>
           <th>Habitat</th>
           <th>Submitted</th>
@@ -82,13 +77,11 @@ admin_layout_open('Dashboard', 'dashboard');
       <tbody>
         <?php foreach ($pending as $s):
           $sid    = (string) $s->_id;
-          $plate  = plate_num($s->_id);
           $when   = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
                   ? $s->created_at->toDateTime()->format('j M') : '—';
           $img    = $s->image_url ?? '';
         ?>
           <tr>
-            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
               <div class="spec">
                 <div class="thumb">
@@ -131,8 +124,7 @@ admin_layout_open('Dashboard', 'dashboard');
     <table class="tbl">
       <thead>
         <tr>
-          <th class="num">Plate</th>
-          <th>Specimen</th>
+          <th>Species</th>
           <th>Diet</th>
           <th>Habitat</th>
           <th>Status</th>
@@ -141,12 +133,10 @@ admin_layout_open('Dashboard', 'dashboard');
       <tbody>
         <?php foreach ($recent as $s):
           $sid    = (string) $s->_id;
-          $plate  = plate_num($s->_id);
           $img    = $s->image_url ?? '';
           $isEnd  = !empty($s->is_endangered);
         ?>
           <tr>
-            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
               <div class="spec">
                 <div class="thumb">

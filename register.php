@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = 'Create account — Wildlife Catalog';
+$page_title = 'Create account — WSCS';
 $page_css   = ['auth.css'];
 include __DIR__ . '/partials/head-bare.php';
 ?>
@@ -52,40 +52,33 @@ include __DIR__ . '/partials/head-bare.php';
 <div class="auth-shell" data-mode="signup">
   <aside class="auth-plate">
     <div class="plate-top">
-      <a href="index.php" class="plate-brand" aria-label="Wildlife Catalog home">
+      <a href="index.php" class="plate-brand" aria-label="Wildlife Species Categorization System — home">
         <span class="mark" aria-hidden="true"></span>
-        <span class="wordmark">Catalog</span>
-        <span class="tag">Est. MMXXIV</span>
+        <span class="wordmark">WSCS</span>
       </a>
-      <span class="plate-issue">
-        <span class="dot" aria-hidden="true"></span>
-        Vol. III · <?= date('Y') ?>
-      </span>
     </div>
     <div class="plate-bot">
-      <h2>A community<br>of <i>field observers.</i></h2>
+      <h2>A community<br>of <i>contributors.</i></h2>
       <blockquote>
-        Each entry begins with a single watcher — patient, curious, willing to put their name to what they saw. Without contributors, the catalog is only a list.
-        <cite>— The Editors</cite>
+        Each entry begins with a single observer — patient, curious, willing to put their name to what they saw. Without contributors, the catalog is only a list.
       </blockquote>
     </div>
-    <span class="plate-credit">Plate №047 · Icterus galbula · R. Hennessy</span>
   </aside>
 
   <section class="auth-form-col">
     <div class="auth-top-right">
-      <a href="index.php">← Back to catalog</a>
+      <a href="index.php">← Back to browse</a>
     </div>
 
     <div class="auth-card">
-      <div class="auth-eyebrow"><span class="num">§ Member access</span></div>
+      <div class="auth-eyebrow"><span class="num">Member access</span></div>
 
       <div class="auth-tabs" role="tablist">
         <a href="login.php"    data-on="0">Sign in</a>
         <a href="register.php" data-on="1">Create account</a>
       </div>
 
-      <h1>Join the catalog<span class="period">.</span></h1>
+      <h1>Join WSCS<span class="period">.</span></h1>
       <p class="sub">Take a minute to create an account. Once you're in, you can submit a species and watch its journey from pending to published.</p>
 
       <?php if ($error): ?>

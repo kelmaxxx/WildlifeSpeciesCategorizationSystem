@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 function checked_if($cond): string { return $cond ? ' checked' : ''; }
 function selected_if(string $a, string $b): string { return $a === $b ? ' selected' : ''; }
 
-$page_title = 'Contribute a specimen — Wildlife Catalog';
+$page_title = 'Contribute a species — WSCS';
 $page_css   = ['submit.css'];
 include __DIR__ . '/partials/head.php';
 include __DIR__ . '/partials/topbar.php';
@@ -63,18 +63,18 @@ include __DIR__ . '/partials/topbar.php';
 
 <section class="frame">
   <div class="crumb">
-    <a href="index.php">Catalog</a>
+    <a href="index.php">Browse</a>
     <span class="sep">/</span>
-    <span class="here">Contribute a specimen</span>
+    <span class="here">Contribute a species</span>
   </div>
 
   <div class="page-head">
     <div>
-      <div class="eyebrow">For contributors · est. read 2 min</div>
-      <h1 class="display">Contribute<br><i class="accent">a specimen.</i></h1>
+      <div class="eyebrow">For contributors</div>
+      <h1 class="display">Contribute<br><i class="accent">a species.</i></h1>
     </div>
     <p class="intro">
-      Add a species to the catalog. Submissions are reviewed by our editors before they appear in the public index.
+      Add a species to the catalog. Submissions are reviewed by an editor before they appear in the public catalog.
     </p>
   </div>
 

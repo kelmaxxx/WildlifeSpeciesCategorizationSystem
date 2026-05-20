@@ -67,7 +67,7 @@ foreach ($habitatRows as $h) {
 usort($habitatChips, fn($a, $b) => ($a['id'] === 'all' ? -1 : ($b['id'] === 'all' ? 1 : $b['count'] - $a['count'])));
 $habitatChips = array_slice($habitatChips, 0, 7);
 
-// ── Featured "Specimen of the week" — newest endangered approved species ──
+// ── Featured species — newest endangered approved species (fallback: newest approved) ──
 $featured = $db->findOne('species', $approvedFilter + ['is_endangered' => true], ['sort' => ['_id' => -1]])
          ?? $db->findOne('species', $approvedFilter, ['sort' => ['_id' => -1]]);
 
@@ -84,10 +84,6 @@ $start = $total === 0 ? 0 : (($page - 1) * $perPage) + 1;
 $end   = min($total, $page * $perPage);
 
 // ── Helpers ──────────────────────────────────────────────────────────────
-function plate_num($id): string {
-    $hex = substr((string) $id, -3);
-    return strtoupper($hex);
-}
 function conservation_dot(bool $endangered): string {
     return $endangered ? 'endangered' : 'stable';
 }
@@ -106,7 +102,7 @@ function page_url(int $n): string {
     return '?' . http_build_query($params);
 }
 
-$page_title = 'Wildlife Catalog — A living index of the species we share this world with.';
+$page_title = 'Wildlife Species Categorization System';
 include __DIR__ . '/partials/head.php';
 include __DIR__ . '/partials/topbar.php';
 ?>
@@ -115,32 +111,18 @@ include __DIR__ . '/partials/topbar.php';
 <section class="hero">
   <div class="hero-inner frame">
     <div class="hero-text">
-      <span class="hero-pill">A living catalog of wildlife</span>
-      <div class="hero-issue" style="margin-top:22px">
-        <span class="dot" aria-hidden="true"></span>
-        <span class="eyebrow">Vol. III · No. <?= htmlspecialchars((string) $totalSpecies) ?> · <?= date('F Y') ?></span>
-      </div>
+      <span class="hero-pill">Wildlife Species Categorization System</span>
       <h1 class="display">
         A living index<br>
         of the species we<br>
         <i class="accent">share this world</i> with.
       </h1>
       <p class="lede">
-        A community-built catalog of the world's wildlife — sightings, descriptions, habitat ranges, and conservation status, recorded by the people who care for them.
+        A community-built catalog of wildlife — diet, habitat, range, and conservation status, recorded by the people who care for them.
       </p>
       <div class="feat-actions">
         <a href="#catalog" class="btn btn-primary">Browse the catalog <span class="arrow" aria-hidden="true"></span></a>
-        <a href="submit_species.php" class="btn btn-ghost">Contribute a sighting</a>
-      </div>
-    </div>
-    <div class="hero-foot">
-      <div class="hero-plate">
-        Plate №<?= $featured ? plate_num($featured->_id) : '000' ?> · Field №R-H/<?= date('Y') ?>
-        <span class="lat"><?= $featured ? htmlspecialchars($featured->scientific_name ?? '') : '' ?></span>
-      </div>
-      <div class="hero-credit">
-        <b>Photograph · Field team</b>
-        Recorded · <?= date('F') ?>
+        <a href="submit_species.php" class="btn btn-ghost">Contribute a species</a>
       </div>
     </div>
   </div>
@@ -162,7 +144,7 @@ include __DIR__ . '/partials/topbar.php';
     <div class="stat">
       <div class="num"><?= number_format($contributorCount) ?></div>
       <div class="label">Contributors</div>
-      <div class="delta">Registered field hands</div>
+      <div class="delta">Registered users</div>
     </div>
     <div class="stat">
       <div class="num"><?= $atRiskPct ?><span class="small">%</span></div>
@@ -172,40 +154,36 @@ include __DIR__ . '/partials/topbar.php';
   </div>
 </section>
 
-<!-- ─── FEATURED SPECIMEN ────────────────────────────────────────────── -->
+<!-- ─── FEATURED SPECIES ─────────────────────────────────────────────── -->
 <?php if ($featured): $fImg = $featured->image_url ?? ''; ?>
 <section class="frame">
   <div class="section-head">
     <div class="title-block">
-      <div class="eyebrow">Specimen of the week · №<?= plate_num($featured->_id) ?></div>
-      <h2 class="display">From the field journal.</h2>
+      <div class="eyebrow">Featured species</div>
+      <h2 class="display">A closer look.</h2>
     </div>
     <p class="desc">
-      Each week our editors choose one specimen for a closer look — the bird, beast, or beetle that earned a longer page in the journal.
+      One species from the catalog, in detail — its diet, habitat, range, and conservation status.
     </p>
   </div>
   <div class="featured">
     <figure class="feat-photo">
       <div class="img" <?= $fImg ? 'style="background-image:url(\'' . htmlspecialchars($fImg) . '\')"' : '' ?>></div>
-      <figcaption class="plate">
-        <div>Plate №<?= plate_num($featured->_id) ?></div>
-        <div class="lat"><?= htmlspecialchars($featured->scientific_name ?? '') ?></div>
-      </figcaption>
     </figure>
     <div class="feat-body">
       <div class="eyebrow"><?= htmlspecialchars($featured->category_name ?? 'Animalia') ?> · <?= htmlspecialchars($featured->habitat_name ?? '') ?></div>
-      <h3><?= htmlspecialchars($featured->name ?? 'Unknown') ?>.</h3>
+      <h3><?= htmlspecialchars($featured->name ?? 'Unknown') ?></h3>
       <div class="lat-name"><?= htmlspecialchars($featured->scientific_name ?? '') ?></div>
       <p class="summary">
         A <?= htmlspecialchars(strtolower($featured->category_name ?? 'species')) ?> recorded in <?= htmlspecialchars($featured->habitat_name ?? 'the wild') ?><?= !empty($featured->habitat_location) ? ' (' . htmlspecialchars($featured->habitat_location) . ')' : '' ?>. <?= !empty($featured->is_endangered) ? 'Currently listed as endangered — populations are declining and require active conservation.' : 'Populations are considered stable; the species remains a familiar sight in its habitat.' ?>
       </p>
       <dl class="feat-meta">
+        <div><dt>Name</dt><dd><?= htmlspecialchars($featured->name ?? '—') ?></dd></div>
+        <div><dt>Scientific name</dt><dd><em><?= htmlspecialchars($featured->scientific_name ?? '—') ?></em></dd></div>
         <div><dt>Diet</dt><dd><?= htmlspecialchars($featured->category_name ?? '—') ?></dd></div>
-        <div><dt>Range</dt><dd><?= htmlspecialchars($featured->habitat_location ?? '—') ?></dd></div>
         <div><dt>Habitat</dt><dd><?= htmlspecialchars($featured->habitat_name ?? '—') ?></dd></div>
+        <div><dt>Range</dt><dd><?= htmlspecialchars($featured->habitat_location ?? '—') ?></dd></div>
         <div><dt>Status</dt><dd><?= conservation_label(!empty($featured->is_endangered)) ?></dd></div>
-        <div><dt>Plate №</dt><dd><?= plate_num($featured->_id) ?></dd></div>
-        <div><dt>Volume</dt><dd>Vol. III · <?= date('Y') ?></dd></div>
       </dl>
       <div class="feat-actions">
         <a href="species_detail.php?id=<?= urlencode((string) $featured->_id) ?>" class="btn btn-primary">
@@ -309,7 +287,6 @@ include __DIR__ . '/partials/topbar.php';
           $hasPhoto = !empty($s->image_url);
           $isEnd    = !empty($s->is_endangered);
           $dot      = conservation_dot($isEnd);
-          $plate    = plate_num($s->_id);
       ?>
         <a class="card" href="species_detail.php?id=<?= urlencode((string) $s->_id) ?>" tabindex="0">
           <div class="card-img<?= $hasPhoto ? ' has-photo' : '' ?>">
@@ -318,14 +295,12 @@ include __DIR__ . '/partials/topbar.php';
             <?php else: ?>
               <div class="placeholder">
                 <div class="silhouette" aria-hidden="true"></div>
-                <div>Plate №<?= $plate ?></div>
                 <div style="font-family:var(--serif);font-style:italic;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-soft)">
                   <?= htmlspecialchars($s->scientific_name ?? '') ?>
                 </div>
                 <div style="margin-top:6px;color:var(--ink-mute)">Photograph forthcoming</div>
               </div>
             <?php endif; ?>
-            <span class="num-tag">№<?= $plate ?></span>
             <span class="status-dot" data-s="<?= $dot ?>" title="<?= conservation_label($isEnd) ?>"></span>
           </div>
           <div>

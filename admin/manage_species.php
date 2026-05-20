@@ -20,20 +20,16 @@ if ($search !== '') {
 
 $species = $db->find('species', $filter, ['sort' => ['name' => 1]]);
 
-function plate_num($id): string {
-    return strtoupper(substr((string) $id, -3));
-}
-
 admin_layout_open('Manage Species', 'species');
 ?>
 
 <header class="admin-top">
   <div>
     <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
-      Catalog index · <?= count($species) ?> records
+      Catalog · <?= count($species) ?> records
     </div>
-    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
-      All <i style="color:var(--oriole-deep)">species.</i>
+    <h1 class="display" style="font-family:var(--serif);font-size:44px;line-height:1.05;letter-spacing:-.018em;margin:8px 0 0;color:var(--ink);font-weight:500">
+      All <i style="color:var(--forest-deep)">species.</i>
     </h1>
   </div>
   <a href="add_species.php" class="btn btn-primary" style="align-self:flex-start">
@@ -69,8 +65,7 @@ admin_layout_open('Manage Species', 'species');
     <table class="tbl">
       <thead>
         <tr>
-          <th class="num">Plate</th>
-          <th>Specimen</th>
+          <th>Species</th>
           <th>Diet</th>
           <th>Habitat</th>
           <th>Status</th>
@@ -80,13 +75,11 @@ admin_layout_open('Manage Species', 'species');
       <tbody>
         <?php foreach ($species as $s):
           $sid    = (string) $s->_id;
-          $plate  = plate_num($s->_id);
           $status = $s->approval_status ?? 'approved';
           $img    = $s->image_url ?? '';
           $isEnd  = !empty($s->is_endangered);
         ?>
           <tr>
-            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
               <div class="spec">
                 <div class="thumb">

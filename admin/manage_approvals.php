@@ -7,20 +7,16 @@ $pending = $db->find(
     ['sort' => ['created_at' => -1]]
 );
 
-function plate_num($id): string {
-    return strtoupper(substr((string) $id, -3));
-}
-
 admin_layout_open('Pending Approvals', 'approvals');
 ?>
 
 <header class="admin-top">
   <div>
     <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
-      Editorial queue · awaiting review
+      Review queue · awaiting decision
     </div>
-    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
-      Pending <i style="color:var(--oriole-deep)">approvals.</i>
+    <h1 class="display" style="font-family:var(--serif);font-size:44px;line-height:1.05;letter-spacing:-.018em;margin:8px 0 0;color:var(--ink);font-weight:500">
+      Pending <i style="color:var(--forest-deep)">approvals.</i>
     </h1>
     <p style="font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-soft);margin:12px 0 0;max-width:620px">
       Each entry below was submitted by a contributor and is waiting on your decision to publish, hold, or reject.
@@ -50,8 +46,7 @@ admin_layout_open('Pending Approvals', 'approvals');
     <table class="tbl">
       <thead>
         <tr>
-          <th class="num">Plate</th>
-          <th>Specimen</th>
+          <th>Species</th>
           <th>Diet</th>
           <th>Habitat</th>
           <th>Contributor</th>
@@ -62,14 +57,12 @@ admin_layout_open('Pending Approvals', 'approvals');
       <tbody>
         <?php foreach ($pending as $s):
           $sid = (string) $s->_id;
-          $plate = plate_num($s->_id);
           $uploader = isset($s->uploader_id) ? $db->findById('users', $s->uploader_id) : null;
           $submitted = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
                      ? $s->created_at->toDateTime()->format('j M Y') : '—';
           $img = $s->image_url ?? '';
         ?>
           <tr>
-            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
               <div class="spec">
                 <div class="thumb">
@@ -100,7 +93,7 @@ admin_layout_open('Pending Approvals', 'approvals');
                   <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
                   <input type="hidden" name="decision" value="approve">
                   <button type="submit"
-                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:0;border-radius:6px;background:var(--ink);color:var(--paper);cursor:pointer">
+                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:0;border-radius:6px;background:var(--forest);color:#fff;cursor:pointer">
                     Approve
                   </button>
                 </form>
@@ -109,7 +102,7 @@ admin_layout_open('Pending Approvals', 'approvals');
                   <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
                   <input type="hidden" name="decision" value="reject">
                   <button type="submit"
-                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:1px solid var(--berry);border-radius:6px;background:transparent;color:var(--berry);cursor:pointer">
+                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:1px solid #8b2c2c;border-radius:6px;background:transparent;color:#8b2c2c;cursor:pointer">
                     Reject
                   </button>
                 </form>

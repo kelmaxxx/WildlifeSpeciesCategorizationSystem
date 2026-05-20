@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = 'Editor sign-in — Wildlife Catalog';
+$page_title = 'Editor sign-in — WSCS';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,42 +40,46 @@ $page_title = 'Editor sign-in — Wildlife Catalog';
   <title><?= htmlspecialchars($page_title) ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/auth.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('wscs-theme'); } catch (e) {}
+      var theme = (saved === 'forest' || saved === 'light') ? saved : 'light';
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.setAttribute('data-theme', theme);
+      });
+    })();
+  </script>
 </head>
-<body data-theme="cream">
+<body data-theme="light">
 
 <div class="auth-shell" data-mode="signin">
   <aside class="auth-plate">
     <div class="plate-top">
-      <a href="../index.php" class="plate-brand" aria-label="Wildlife Catalog home">
+      <a href="../index.php" class="plate-brand" aria-label="Wildlife Species Categorization System — home">
         <span class="mark" aria-hidden="true"></span>
-        <span class="wordmark">Catalog</span>
-        <span class="tag">Editorial · Admin</span>
+        <span class="wordmark">WSCS</span>
+        <span class="tag">Admin</span>
       </a>
-      <span class="plate-issue">
-        <span class="dot" aria-hidden="true"></span>
-        Vol. III · <?= date('Y') ?>
-      </span>
     </div>
     <div class="plate-bot">
       <h2>The editor's<br><i>desk.</i></h2>
       <blockquote>
-        Every published entry passes through an editor — verifying sources, polishing prose, deciding what earns a longer page in the journal. Sign in to take your seat.
-        <cite>— The Editors</cite>
+        Every published entry passes through an editor — verifying submissions and approving species before they reach the public catalog. Sign in to take your seat.
       </blockquote>
     </div>
-    <span class="plate-credit">Plate №024 · Pithecophaga jefferyi · Field №R-H</span>
   </aside>
 
   <section class="auth-form-col">
     <div class="auth-top-right">
-      <a href="../index.php">← Back to catalog</a>
+      <a href="../index.php">← Back to public site</a>
     </div>
 
     <div class="auth-card">
-      <div class="auth-eyebrow"><span class="num">§ Editor access</span></div>
+      <div class="auth-eyebrow"><span class="num">Editor access</span></div>
 
       <h1>Editor sign-in<span class="period">.</span></h1>
       <p class="sub">Restricted to editors. Use your editor credentials to manage approvals, species, and contributors.</p>

@@ -24,7 +24,7 @@ function admin_layout_open(string $title, string $active = ''): void
 
     $adminUser   = $_SESSION['admin_username'] ?? 'Admin';
     $avatar      = strtoupper(substr($adminUser, 0, 1));
-    $pageTitle   = $title . ' — Wildlife Catalog · Admin';
+    $pageTitle   = $title . ' — WSCS · Admin';
 
     $nav = [
         'editorial' => [
@@ -62,18 +62,28 @@ function admin_layout_open(string $title, string $active = ''): void
   <title><?= htmlspecialchars($pageTitle) ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <link rel="stylesheet" href="../assets/css/submit.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('wscs-theme'); } catch (e) {}
+      var theme = (saved === 'forest' || saved === 'light') ? saved : 'light';
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.setAttribute('data-theme', theme);
+      });
+    })();
+  </script>
 </head>
-<body data-theme="cream">
+<body data-theme="light">
 
 <div class="admin">
   <aside class="sidebar">
     <a href="dashboard.php" class="sb-brand">
       <span class="mark" aria-hidden="true"></span>
-      <span class="wordmark">Catalog</span>
+      <span class="wordmark">WSCS</span>
       <span class="role">Admin</span>
     </a>
 

@@ -1,46 +1,87 @@
 /* ─────────────────────────────────────────────────────────────────────────
  * base.css — Design tokens, typography utilities, reusable components
  *
- * Drop-in replacement for your existing assets/css/base.css.
+ * Light theme: white surfaces + forest-green accents.
+ * Forest dark theme: applied via [data-theme="forest"] on <body>.
  * Page-specific styles live in public.css / admin.css / auth.css / detail.css.
  * ───────────────────────────────────────────────────────────────────────── */
 
-:root {
-  /* Field-journal palette */
-  --cream:        #f6f1e6;
-  --cream-deep:   #ece5d4;
-  --paper:        #fbf8f0;
-  --ink:          #1a1f17;
-  --ink-soft:     #3a3d33;
-  --ink-mute:     #6b6f5d;
-  --rule:         #d5cdb6;
-  --rule-soft:    #e6dfc9;
+:root,
+body[data-theme="light"] {
+  /* Surfaces — clean white system, no warm cream */
+  --paper:        #ffffff;
+  --surface:      #f7f8f5;
+  --surface-2:    #eef1ea;
 
-  --moss:         #2f3a26;
-  --moss-deep:    #1c2218;
-  --sage:         #7a8a5b;
+  /* Ink */
+  --ink:          #131a14;
+  --ink-soft:     #3b443c;
+  --ink-mute:     #6b7468;
 
-  --oriole:       #e07a1f;
-  --oriole-deep:  #b85a10;
-  --blossom:      #f2c9c9;
-  --berry:        #8b2c2c;
+  /* Rules / borders */
+  --rule:         #d6dbcf;
+  --rule-soft:    #e7ebe0;
 
-  --status-stable: #5a7a3b;
-  --status-vuln:   #c98a1a;
-  --status-end:    #b85a10;
+  /* Forest greens — primary brand */
+  --forest:       #2f5d3b;
+  --forest-deep:  #1f4128;
+  --forest-soft:  #4c7b59;
+  --sage:         #7fa080;
+  --leaf:         #6ba36a;
+  --mint:         #e6f1e3;
+
+  /* Accent kept neutral; status colors stay readable */
+  --accent:       var(--forest);
+  --accent-deep:  var(--forest-deep);
+
+  /* Status (conservation) */
+  --status-stable: #3f7a48;
+  --status-vuln:   #b58a1f;
+  --status-end:    #b34a2b;
   --status-crit:   #8b2c2c;
 
-  --serif: 'Instrument Serif', 'Newsreader', Georgia, serif;
-  --sans:  'Geist', ui-sans-serif, -apple-system, system-ui, sans-serif;
-  --mono:  'JetBrains Mono', ui-monospace, Menlo, monospace;
+  /* Type stacks — Inter + Fraunces + IBM Plex Mono
+     (deliberately not the Instrument-Serif + Geist pair) */
+  --serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
+  --sans:  'Inter', ui-sans-serif, -apple-system, system-ui, 'Segoe UI', sans-serif;
+  --mono:  'IBM Plex Mono', ui-monospace, Menlo, monospace;
 
   --r-sm: 4px;
   --r-md: 8px;
   --r-lg: 14px;
 
-  --shadow-sm: 0 1px 2px rgba(20,24,15,0.06);
-  --shadow:    0 4px 16px rgba(20,24,15,0.08);
-  --shadow-lg: 0 12px 40px rgba(20,24,15,0.14);
+  --shadow-sm: 0 1px 2px rgba(20,30,20,0.05);
+  --shadow:    0 4px 16px rgba(20,30,20,0.07);
+  --shadow-lg: 0 12px 40px rgba(20,30,20,0.12);
+}
+
+/* ── Forest (dark) theme ────────────────────────────────────────────────── */
+body[data-theme="forest"] {
+  --paper:        #0e1611;
+  --surface:      #15201a;
+  --surface-2:    #1d2a22;
+
+  --ink:          #e8efe4;
+  --ink-soft:     #c4cdbf;
+  --ink-mute:     #8a9388;
+
+  --rule:         #2a3a30;
+  --rule-soft:    #1f2b24;
+
+  --forest:       #6ba36a;
+  --forest-deep:  #88c187;
+  --forest-soft:  #4f7c57;
+  --sage:         #9fbf9c;
+  --leaf:         #88c187;
+  --mint:         #1c2a20;
+
+  --accent:       var(--forest);
+  --accent-deep:  var(--forest-deep);
+
+  --status-stable: #74b07c;
+  --status-vuln:   #d4b264;
+  --status-end:    #d97c5b;
+  --status-crit:   #c66363;
 }
 
 /* ── Reset & base ───────────────────────────────────────────────────────── */
@@ -54,16 +95,18 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
 
 /* ── Typographic utilities ──────────────────────────────────────────────── */
-.display { font-family: var(--serif); font-weight: 400; letter-spacing: -0.015em; line-height: 0.95; }
+.display { font-family: var(--serif); font-weight: 500; letter-spacing: -0.018em; line-height: 1.02;
+           font-variation-settings: "SOFT" 30, "WONK" 0; }
 .display i, .display em { font-style: italic; }
 .eyebrow { font-family: var(--mono); text-transform: uppercase; font-size: 11px;
            letter-spacing: 0.14em; color: var(--ink-mute); font-weight: 500; }
-.num     { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.num     { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
 .latin   { font-family: var(--serif); font-style: italic; font-weight: 400; }
 
 /* ── Page frame ─────────────────────────────────────────────────────────── */
@@ -76,11 +119,11 @@ img { max-width: 100%; display: block; }
   font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer;
   display: inline-flex; align-items: center; gap: 8px; transition: all 0.18s ease;
 }
-.btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--oriole-deep); color: #fff; }
+.btn-primary { background: var(--forest); color: #fff; }
+.btn-primary:hover { background: var(--forest-deep); color: #fff; }
 .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
-.btn-ghost:hover { border-color: var(--ink); }
-.btn-danger { background: var(--berry); color: #fff; }
+.btn-ghost:hover { border-color: var(--forest); color: var(--forest-deep); }
+.btn-danger { background: #8b2c2c; color: #fff; }
 .btn-danger:hover { background: #6a1e1e; }
 .arrow { width: 14px; height: 1px; background: currentColor; position: relative; }
 .arrow::after {
@@ -97,33 +140,33 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--rule); color: var(--ink-soft); background: transparent;
 }
 .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-mute); }
-.badge.carnivore::before { background: var(--berry); }
+.badge.carnivore::before { background: var(--status-end); }
 .badge.herbivore::before { background: var(--sage); }
-.badge.omnivore::before  { background: var(--oriole); }
+.badge.omnivore::before  { background: var(--leaf); }
 .badge.stable::before     { background: var(--status-stable); }
 .badge.vulnerable::before { background: var(--status-vuln); }
 .badge.endangered::before { background: var(--status-end); }
 .badge.critical::before   { background: var(--status-crit); }
-.badge.role-admin { color: var(--paper); background: var(--ink); border-color: var(--ink); }
-.badge.role-admin::before { background: var(--oriole); }
+.badge.role-admin { color: #fff; background: var(--forest); border-color: var(--forest); }
+.badge.role-admin::before { background: var(--mint); }
 .badge.status-pending::before  { background: var(--status-vuln); }
 .badge.status-approved::before { background: var(--status-stable); }
-.badge.status-rejected::before { background: var(--berry); }
+.badge.status-rejected::before { background: #8b2c2c; }
 
 /* ── Alerts ─────────────────────────────────────────────────────────────── */
 .alert {
   padding: 14px 16px; border-radius: var(--r-md); border: 1px solid var(--rule);
-  background: var(--cream); color: var(--ink); font-size: 14px;
+  background: var(--surface); color: var(--ink); font-size: 14px;
   display: flex; gap: 12px; align-items: start;
 }
 .alert::before {
   content: ""; flex-shrink: 0; width: 6px; align-self: stretch;
   border-radius: 999px; background: var(--ink-mute);
 }
-.alert.info::before  { background: var(--sage); }
+.alert.info::before  { background: var(--forest); }
 .alert.warn::before  { background: var(--status-vuln); }
-.alert.error::before { background: var(--berry); }
-.alert.error { background: #f8e9e9; }
+.alert.error::before { background: #8b2c2c; }
+.alert.error { background: color-mix(in oklab, #8b2c2c 8%, var(--paper)); }
 
 /* ── Form fields (shared) ───────────────────────────────────────────────── */
 .form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
@@ -144,25 +187,46 @@ img { max-width: 100%; display: block; }
 }
 .form-row input:focus,
 .form-row select:focus,
-.form-row textarea:focus { border-bottom-color: var(--ink); }
+.form-row textarea:focus { border-bottom-color: var(--forest); }
 .form-row .hint { font-size: 12px; color: var(--ink-mute); }
 
 /* ── Focus rings ────────────────────────────────────────────────────────── */
-*:focus-visible { outline: 2px solid var(--oriole); outline-offset: 2px; }
+*:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+
+/* ── Theme toggle button (used in topbar) ───────────────────────────────── */
+.theme-toggle {
+  appearance: none; background: transparent; border: 1px solid var(--rule);
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-soft); transition: all 0.18s ease; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--forest); color: var(--forest); }
+.theme-toggle svg { width: 16px; height: 16px; display: block; }
+.theme-toggle .icon-sun  { display: none; }
+.theme-toggle .icon-moon { display: block; }
+body[data-theme="forest"] .theme-toggle .icon-sun  { display: block; }
+body[data-theme="forest"] .theme-toggle .icon-moon { display: none; }
+
+/* ── Token aliases (legacy names → forest palette) ──────────────────────── */
+:root,
+body[data-theme="light"] {
+  --cream:        var(--surface);
+  --cream-deep:   var(--surface-2);
+  --oriole:       var(--forest);
+  --oriole-deep:  var(--forest-deep);
+  --moss:         var(--forest-deep);
+  --berry:        #8b2c2c;
+}
+body[data-theme="forest"] {
+  --cream:        var(--surface);
+  --cream-deep:   var(--surface-2);
+  --oriole:       var(--forest);
+  --oriole-deep:  var(--forest-deep);
+  --moss:         var(--forest-deep);
+  --berry:        #c66363;
+}
 
 /* ── Reduced motion ─────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.001s !important; animation-duration: 0.001s !important; }
-}
-
-/* ── Forest theme override (optional dark mode) ─────────────────────────── */
-body[data-theme="forest"] {
-  --paper:      #14180f;
-  --cream:      #1c2218;
-  --cream-deep: #232a1d;
-  --ink:        #ecead8;
-  --ink-soft:   #c8c5af;
-  --ink-mute:   #8a8870;
-  --rule:       #3a4030;
-  --rule-soft:  #2a2f23;
 }
