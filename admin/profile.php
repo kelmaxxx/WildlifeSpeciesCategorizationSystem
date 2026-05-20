@@ -2,11 +2,10 @@
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/lib/activity.php';
 
-$id   = Mongo::oid($_SESSION['admin_id'] ?? null);
-$me   = $id ? $db->findById('users', $id) : null;
+$id = Mongo::oid($_SESSION['admin_id'] ?? null);
+$me = $id ? $db->findById('users', $id) : null;
 
 if (!$me) {
-    // Session points to a missing user — force re-login.
     session_destroy();
     header('Location: login.php');
     exit;
@@ -43,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_username'] = $newUsername;
             log_activity($db, 'update', 'user', $newUsername . ' (self)');
 
-            // Reload fresh data
             $me = $db->findById('users', $id);
             $success = $newPassword !== ''
                 ? 'Profile updated. Password changed successfully.'
@@ -55,48 +53,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 admin_layout_open('My Profile', 'profile');
 ?>
 
-<header class="page-header">
+<header class="admin-top">
   <div>
-    <h1>My profile</h1>
-    <p class="subtitle">Update your username or change your password.</p>
+    <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
+      Editor's desk · your account
+    </div>
+    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
+      <i style="color:var(--oriole-deep)">Profile.</i>
+    </h1>
+    <p style="font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);margin:10px 0 0">
+      Update your username, or change your password.
+    </p>
   </div>
 </header>
 
-<div class="form-card">
-  <?php if ($error): ?>
-    <div class="alert error"><?= htmlspecialchars($error) ?></div>
-  <?php elseif ($success): ?>
-    <div class="alert info"><?= htmlspecialchars($success) ?></div>
-  <?php endif; ?>
+<?php if ($error): ?>
+  <div class="alert error" style="margin-bottom:24px"><?= htmlspecialchars($error) ?></div>
+<?php elseif ($success): ?>
+  <div class="alert info" style="margin-bottom:24px"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
 
-  <form method="POST">
-    <?= csrf_field() ?>
-    <div class="form-row">
+<form method="POST" class="contribute" style="max-width:560px">
+  <?= csrf_field() ?>
+
+  <fieldset class="fset">
+    <legend>
+      <span class="num">§ 01</span>
+      <h2>Identity</h2>
+      <span class="req">Required</span>
+    </legend>
+    <div class="frow">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required value="<?= htmlspecialchars($me->username ?? '') ?>">
     </div>
+  </fieldset>
 
-    <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--slate-100)">
-    <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--slate-700)">Change password</h3>
-
-    <div class="form-row">
-      <label for="current_password">Current password <span class="hint">required for any change</span></label>
+  <fieldset class="fset">
+    <legend>
+      <span class="num">§ 02</span>
+      <h2>Change password</h2>
+      <span class="req">Optional</span>
+    </legend>
+    <div class="frow">
+      <label for="current_password">Current password <span class="opt">Required for any change</span></label>
       <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
     </div>
-    <div class="form-row">
-      <label for="new_password">New password <span class="hint">leave blank to keep current</span></label>
+    <div class="frow">
+      <label for="new_password">New password <span class="opt">Leave blank to keep current</span></label>
       <input type="password" id="new_password" name="new_password" autocomplete="new-password">
     </div>
-    <div class="form-row">
+    <div class="frow">
       <label for="confirm_password">Confirm new password</label>
       <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password">
     </div>
+  </fieldset>
 
-    <div class="form-actions">
-      <a href="dashboard.php" class="btn ghost">Cancel</a>
-      <button type="submit" class="btn">Save changes</button>
-    </div>
-  </form>
-</div>
+  <div class="submit-row">
+    <a href="dashboard.php" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save changes <span class="arrow" aria-hidden="true"></span></button>
+  </div>
+</form>
 
-<?php admin_layout_close();
+<?php admin_layout_close(); ?>
