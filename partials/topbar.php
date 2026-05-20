@@ -1,9 +1,12 @@
 <?php
-/* partials/topbar.php — sticky public navigation
- * Expects $_SESSION['user'] (with ['name', 'role']) if logged in.
+/* partials/topbar.php — sticky public navigation (field-journal style)
+ * Uses the project's existing flat session keys: user_id / user_name / user_role.
  */
-$user = $_SESSION['user'] ?? null;
-$current = basename($_SERVER['PHP_SELF']);
+if (session_status() === PHP_SESSION_NONE) session_start();
+$loggedIn = !empty($_SESSION['user_id']);
+$userName = $_SESSION['user_name'] ?? '';
+$userRole = $_SESSION['user_role'] ?? '';
+$current  = basename($_SERVER['PHP_SELF']);
 function nav_active(string $file, string $current): string {
     return $file === $current ? ' active' : '';
 }
@@ -16,15 +19,14 @@ function nav_active(string $file, string $current): string {
       <span class="tag">Est. MMXXIV · Vol. III</span>
     </a>
     <nav class="primary">
-      <a href="index.php"            class="<?= 'a' . nav_active('index.php', $current) ?>">Browse</a>
-      <a href="habitats.php"         class="<?= 'a' . nav_active('habitats.php', $current) ?>">Habitats</a>
-      <a href="submit_species.php"   class="<?= 'a' . nav_active('submit_species.php', $current) ?>">Submit</a>
-      <?php if ($user): ?>
-        <a href="my_submissions.php" class="<?= 'a' . nav_active('my_submissions.php', $current) ?>">My submissions</a>
-        <?php if (($user['role'] ?? '') === 'admin'): ?>
-          <a href="admin/dashboard.php">Admin</a>
+      <a href="index.php" class="a<?= nav_active('index.php', $current) ?>">Browse</a>
+      <a href="submit_species.php" class="a<?= nav_active('submit_species.php', $current) ?>">Submit</a>
+      <?php if ($loggedIn): ?>
+        <a href="my_submissions.php" class="a<?= nav_active('my_submissions.php', $current) ?>">My submissions</a>
+        <?php if ($userRole === 'admin'): ?>
+          <a href="admin/dashboard.php" class="a">Admin</a>
         <?php endif; ?>
-        <a href="logout.php" class="nav-cta">Sign out · <?= htmlspecialchars($user['name']) ?></a>
+        <a href="logout.php" class="nav-cta">Sign out · <?= htmlspecialchars($userName) ?></a>
       <?php else: ?>
         <a href="login.php" class="nav-cta">Sign in</a>
       <?php endif; ?>
