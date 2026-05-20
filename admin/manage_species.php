@@ -1,8 +1,11 @@
 <?php
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/lib/settings.php';
 
 $statusFilter = $_GET['status'] ?? '';
 $search       = trim($_GET['q'] ?? '');
+$featuredId   = get_setting($db, 'featured_species_id');
+$featuredKey  = $featuredId ? (string) $featuredId : '';
 
 $filter = [];
 if (in_array($statusFilter, ['pending','approved','rejected'], true)) {
@@ -62,6 +65,9 @@ admin_layout_open('Manage Species', 'species');
       No species match your filters.
     </div>
   <?php else: ?>
+    <?php
+      $backUrl = 'manage_species.php' . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '');
+    ?>
     <table class="tbl">
       <thead>
         <tr>
@@ -69,17 +75,20 @@ admin_layout_open('Manage Species', 'species');
           <th>Diet</th>
           <th>Habitat</th>
           <th>Status</th>
+          <th>Featured</th>
           <th style="text-align:right">Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($species as $s):
-          $sid    = (string) $s->_id;
-          $status = $s->approval_status ?? 'approved';
-          $img    = $s->image_url ?? '';
-          $isEnd  = !empty($s->is_endangered);
+          $sid       = (string) $s->_id;
+          $status    = $s->approval_status ?? 'approved';
+          $img       = $s->image_url ?? '';
+          $isEnd     = !empty($s->is_endangered);
+          $isFeat    = ($sid === $featuredKey);
+          $canFeat   = ($status === 'approved');
         ?>
-          <tr>
+          <tr<?= $isFeat ? ' class="is-featured"' : '' ?>>
             <td>
               <div class="spec">
                 <div class="thumb">
@@ -103,18 +112,50 @@ admin_layout_open('Manage Species', 'species');
                 <span style="font-family:var(--mono);font-size:10px;color:var(--status-end);margin-left:6px;text-transform:uppercase;letter-spacing:.08em">· at risk</span>
               <?php endif; ?>
             </td>
+            <td>
+              <?php if ($isFeat): ?>
+                <form method="POST" action="set_featured.php" style="display:inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="action" value="clear">
+                  <input type="hidden" name="back" value="<?= htmlspecialchars($backUrl) ?>">
+                  <button type="submit"
+                          title="Unfeature this species"
+                          style="font-family:var(--mono);font-size:10px;color:var(--forest-deep);text-transform:uppercase;letter-spacing:.12em;padding:5px 10px;border:1px solid var(--forest);background:var(--mint);border-radius:6px;cursor:pointer">
+                    ★ Featured · unset
+                  </button>
+                </form>
+              <?php elseif ($canFeat): ?>
+                <form method="POST" action="set_featured.php" style="display:inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="action" value="set">
+                  <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
+                  <input type="hidden" name="back" value="<?= htmlspecialchars($backUrl) ?>">
+                  <button type="submit"
+                          title="Show this species in the homepage feature section"
+                          style="font-family:var(--mono);font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em;padding:5px 10px;border:1px solid var(--rule);background:transparent;border-radius:6px;cursor:pointer">
+                    ☆ Set featured
+                  </button>
+                </form>
+              <?php else: ?>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em">—</span>
+              <?php endif; ?>
+            </td>
             <td style="text-align:right">
               <div style="display:inline-flex;gap:6px">
                 <a href="edit_species.php?id=<?= urlencode($sid) ?>"
                    style="font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid var(--rule-soft);border-radius:6px;text-decoration:none">Edit</a>
                 <a href="delete_species.php?id=<?= urlencode($sid) ?>"
-                   style="font-family:var(--mono);font-size:11px;color:var(--berry);text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid var(--berry);border-radius:6px;text-decoration:none">Delete</a>
+                   style="font-family:var(--mono);font-size:11px;color:#8b2c2c;text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid #8b2c2c;border-radius:6px;text-decoration:none">Delete</a>
               </div>
             </td>
           </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
+    <p style="margin-top:18px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute)">
+      The featured species appears in the "Featured species" block on the homepage.
+      Only approved species can be featured. Set none to fall back to the most recent endangered species.
+    </p>
   <?php endif; ?>
 </section>
 

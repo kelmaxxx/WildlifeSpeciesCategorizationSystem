@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/mongo.php';
+require_once __DIR__ . '/admin/lib/settings.php';
 
 // ── Inputs ───────────────────────────────────────────────────────────────
 $q       = trim($_GET['q']       ?? '');
@@ -67,9 +68,16 @@ foreach ($habitatRows as $h) {
 usort($habitatChips, fn($a, $b) => ($a['id'] === 'all' ? -1 : ($b['id'] === 'all' ? 1 : $b['count'] - $a['count'])));
 $habitatChips = array_slice($habitatChips, 0, 7);
 
-// ── Featured species — newest endangered approved species (fallback: newest approved) ──
-$featured = $db->findOne('species', $approvedFilter + ['is_endangered' => true], ['sort' => ['_id' => -1]])
-         ?? $db->findOne('species', $approvedFilter, ['sort' => ['_id' => -1]]);
+// ── Featured species — admin-pinned, then newest endangered, then newest approved ──
+$featured = null;
+$pinnedId = get_setting($db, 'featured_species_id');
+if ($pinnedId) {
+    $featured = $db->findOne('species', $approvedFilter + ['_id' => $pinnedId]);
+}
+if (!$featured) {
+    $featured = $db->findOne('species', $approvedFilter + ['is_endangered' => true], ['sort' => ['_id' => -1]])
+             ?? $db->findOne('species', $approvedFilter, ['sort' => ['_id' => -1]]);
+}
 
 // ── Paginated list ───────────────────────────────────────────────────────
 $total      = $db->count('species', $mongoFilter);
