@@ -1,7 +1,13 @@
-<!--
-  partials/head.php — head snippet
-  Replace your <head> block (or the relevant pieces of it) with this.
--->
+<?php
+/* partials/head-bare.php — head fragment for auth screens
+ *
+ * Like head.php but does NOT close <body> after, does NOT include the
+ * topbar. Auth pages use a full-bleed split layout and provide their
+ * own brand mark inside the left plate.
+ *
+ * Pages that include this MUST close </body></html> themselves.
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,20 +15,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($page_title ?? 'Wildlife Catalog') ?></title>
 
-  <!-- Editorial font stack -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Project styles -->
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/public.css">
   <?php if (!empty($page_css)): foreach ($page_css as $css): ?>
     <link rel="stylesheet" href="assets/css/<?= htmlspecialchars($css) ?>">
   <?php endforeach; endif; ?>
-
-  <!-- (Tailwind CDN removed — the new system doesn't need it.
-       If you still want it for utility classes elsewhere, keep
-       your existing tag and ensure preflight stays disabled.) -->
 </head>
 <body data-theme="cream">
