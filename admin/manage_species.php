@@ -20,70 +20,109 @@ if ($search !== '') {
 
 $species = $db->find('species', $filter, ['sort' => ['name' => 1]]);
 
+function plate_num($id): string {
+    return strtoupper(substr((string) $id, -3));
+}
+
 admin_layout_open('Manage Species', 'species');
 ?>
 
-<header class="page-header">
+<header class="admin-top">
   <div>
-    <h1>Species</h1>
-    <p class="subtitle">All species in the catalog. Filter by approval status or search by name.</p>
+    <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
+      Catalog index · <?= count($species) ?> records
+    </div>
+    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
+      All <i style="color:var(--oriole-deep)">species.</i>
+    </h1>
   </div>
-  <a href="add_species.php" class="btn">&#43; Add new species</a>
+  <a href="add_species.php" class="btn btn-primary" style="align-self:flex-start">
+    Add new species <span class="arrow" aria-hidden="true"></span>
+  </a>
 </header>
 
-<div class="panel">
-  <div class="panel-header">
-    <h2>All species (<?= count($species) ?>)</h2>
-    <form class="panel-tools" method="GET">
-      <input type="search" name="q" placeholder="Search…" value="<?= htmlspecialchars($search) ?>">
-      <select name="status" onchange="this.form.submit()">
+<section class="panel" style="border-right:0;padding:32px 0">
+  <form class="panel-head" method="GET" style="gap:16px;flex-wrap:wrap">
+    <h2 style="font-family:var(--serif);font-size:28px;letter-spacing:-.01em;margin:0;color:var(--ink)">Records.</h2>
+    <div class="tools" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <input type="search" name="q" placeholder="Search…" value="<?= htmlspecialchars($search) ?>"
+             style="font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);min-width:200px">
+      <select name="status" onchange="this.form.submit()"
+              style="font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)">
         <option value="">All statuses</option>
         <?php foreach (['pending','approved','rejected'] as $s): ?>
           <option value="<?= $s ?>" <?= $statusFilter === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
         <?php endforeach; ?>
       </select>
-      <button type="submit" class="btn ghost">Apply</button>
+      <button type="submit" class="btn btn-ghost">Apply</button>
       <?php if ($search !== '' || $statusFilter !== ''): ?>
-        <a href="manage_species.php" class="btn ghost">Reset</a>
+        <a href="manage_species.php" class="btn btn-ghost">Reset</a>
       <?php endif; ?>
-    </form>
-  </div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Scientific name</th>
-        <th>Category</th>
-        <th>Habitat</th>
-        <th>Endangered</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if (count($species) === 0): ?>
-        <tr><td colspan="7" class="table-empty">No species match your filters.</td></tr>
-      <?php else: foreach ($species as $s):
-        $id     = (string) $s->_id;
-        $status = $s->approval_status ?? 'approved';
-      ?>
-        <tr>
-          <td><strong><?= htmlspecialchars($s->name ?? '') ?></strong></td>
-          <td><em><?= htmlspecialchars($s->scientific_name ?? '') ?></em></td>
-          <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
-          <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
-          <td><?= !empty($s->is_endangered) ? '<span class="badge endangered">Yes</span>' : 'No' ?></td>
-          <td><span class="badge status-<?= htmlspecialchars($status) ?>"><?= htmlspecialchars(ucfirst($status)) ?></span></td>
-          <td>
-            <div class="actions">
-              <a class="edit" href="edit_species.php?id=<?= urlencode($id) ?>">Edit</a>
-              <a class="del"  href="delete_species.php?id=<?= urlencode($id) ?>">Delete</a>
-            </div>
-          </td>
-        </tr>
-      <?php endforeach; endif; ?>
-    </tbody>
-  </table>
-</div>
+    </div>
+  </form>
 
-<?php admin_layout_close();
+  <?php if (count($species) === 0): ?>
+    <div style="padding:48px 0;text-align:center;font-family:var(--serif);font-style:italic;color:var(--ink-soft)">
+      No species match your filters.
+    </div>
+  <?php else: ?>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th class="num">Plate</th>
+          <th>Specimen</th>
+          <th>Diet</th>
+          <th>Habitat</th>
+          <th>Status</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($species as $s):
+          $sid    = (string) $s->_id;
+          $plate  = plate_num($s->_id);
+          $status = $s->approval_status ?? 'approved';
+          $img    = $s->image_url ?? '';
+          $isEnd  = !empty($s->is_endangered);
+        ?>
+          <tr>
+            <td class="num"><span class="plate">№<?= $plate ?></span></td>
+            <td>
+              <div class="spec">
+                <div class="thumb">
+                  <?php if ($img): ?>
+                    <div class="img" style="background-image:url('<?= htmlspecialchars($img) ?>')"></div>
+                  <?php endif; ?>
+                </div>
+                <div class="name">
+                  <a class="common" href="edit_species.php?id=<?= urlencode($sid) ?>" style="color:inherit;text-decoration:none">
+                    <?= htmlspecialchars($s->name ?? 'Unknown') ?>
+                  </a>
+                  <div class="latin"><?= htmlspecialchars($s->scientific_name ?? '') ?></div>
+                </div>
+              </div>
+            </td>
+            <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
+            <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
+            <td>
+              <span class="status" data-s="<?= htmlspecialchars($status) ?>"><?= htmlspecialchars(ucfirst($status)) ?></span>
+              <?php if ($isEnd): ?>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--status-end);margin-left:6px;text-transform:uppercase;letter-spacing:.08em">· at risk</span>
+              <?php endif; ?>
+            </td>
+            <td style="text-align:right">
+              <div style="display:inline-flex;gap:6px">
+                <a href="edit_species.php?id=<?= urlencode($sid) ?>"
+                   style="font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid var(--rule-soft);border-radius:6px;text-decoration:none">Edit</a>
+                <a href="delete_species.php?id=<?= urlencode($sid) ?>"
+                   style="font-family:var(--mono);font-size:11px;color:var(--berry);text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid var(--berry);border-radius:6px;text-decoration:none">Delete</a>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+</section>
+
+<?php admin_layout_close(); ?>
