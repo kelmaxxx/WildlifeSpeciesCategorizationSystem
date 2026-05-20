@@ -2,101 +2,174 @@
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/lib/activity.php';
 
-$totalSpecies    = $db->count('species');
-$endangered      = $db->count('species', ['is_endangered' => true]);
-$totalCategories = $db->count('categories');
-$totalHabitats   = $db->count('habitats');
-$pending         = $db->count('species', ['approval_status' => 'pending']);
+$totalSpecies     = $db->count('species');
+$approvedSpecies  = $db->count('species', ['approval_status' => 'approved']);
+$endangeredCount  = $db->count('species', ['approval_status' => 'approved', 'is_endangered' => true]);
+$totalCategories  = $db->count('categories');
+$totalHabitats    = $db->count('habitats');
+$pendingCount     = $db->count('species', ['approval_status' => 'pending']);
 
-$recent   = $db->find('species', [], ['sort' => ['_id' => -1], 'limit' => 5]);
+$pending  = $db->find('species', ['approval_status' => 'pending'], ['sort' => ['_id' => -1], 'limit' => 5]);
+$recent   = $db->find('species', ['approval_status' => 'approved'], ['sort' => ['_id' => -1], 'limit' => 6]);
 $activity = $db->find('activity_log', [], ['sort' => ['created_at' => -1], 'limit' => 8]);
+
+function plate_num($id): string {
+    return strtoupper(substr((string) $id, -3));
+}
 
 admin_layout_open('Dashboard', 'dashboard');
 ?>
 
-<header class="page-header">
+<header class="admin-top">
   <div>
-    <h1>Welcome back, <?= htmlspecialchars($_SESSION['admin_username'] ?? 'admin') ?></h1>
-    <p class="subtitle">Here's a snapshot of your wildlife catalog.</p>
+    <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
+      Editor's desk · <?= date('l, j F Y') ?>
+    </div>
+    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
+      Welcome back, <i style="color:var(--oriole-deep)"><?= htmlspecialchars($_SESSION['admin_username'] ?? 'admin') ?></i>.
+    </h1>
   </div>
 </header>
 
-<div class="cards-stat">
-  <div class="stat-card green">
-    <div class="label">Total Species</div>
-    <div class="value"><?= $totalSpecies ?></div>
+<div class="stats">
+  <div class="stat">
+    <div class="num"><?= number_format($totalSpecies) ?></div>
+    <div class="label">Total species</div>
+    <div class="delta"><?= number_format($approvedSpecies) ?> published</div>
   </div>
-  <div class="stat-card violet">
+  <div class="stat">
+    <div class="num"><?= number_format($endangeredCount) ?></div>
     <div class="label">Endangered</div>
-    <div class="value"><?= $endangered ?></div>
+    <div class="delta" style="color:var(--status-end)">Listed at risk</div>
   </div>
-  <div class="stat-card amber">
-    <div class="label">Categories</div>
-    <div class="value"><?= $totalCategories ?></div>
+  <div class="stat">
+    <div class="num"><?= number_format($pendingCount) ?></div>
+    <div class="label">Pending approval</div>
+    <div class="delta" style="color:var(--status-vuln)">Awaiting your review</div>
   </div>
-  <div class="stat-card">
+  <div class="stat">
+    <div class="num"><?= number_format($totalHabitats) ?></div>
     <div class="label">Habitats</div>
-    <div class="value"><?= $totalHabitats ?></div>
-  </div>
-  <div class="stat-card rose">
-    <div class="label">Pending Approvals</div>
-    <div class="value"><?= $pending ?></div>
+    <div class="delta"><?= number_format($totalCategories) ?> categories</div>
   </div>
 </div>
 
-<div class="panel-grid">
-  <div class="panel">
-    <div class="panel-header">
-      <h2>Recently added species</h2>
-      <a href="manage_species.php" class="btn ghost">Manage species &rarr;</a>
+<section class="panel" style="border-right:0;padding:32px 0">
+  <div class="panel-head">
+    <h2 style="font-family:var(--serif);font-size:28px;letter-spacing:-.01em;margin:0;color:var(--ink)">Pending approvals.</h2>
+    <div class="tools">
+      <span class="count"><?= $pendingCount ?> waiting</span>
+      <a href="manage_approvals.php">Review all →</a>
     </div>
-    <table class="table">
+  </div>
+
+  <?php if (count($pending) === 0): ?>
+    <div style="padding:32px 0;font-family:var(--serif);font-style:italic;color:var(--ink-soft)">
+      Inbox zero. Nothing waiting for your review.
+    </div>
+  <?php else: ?>
+    <table class="tbl">
       <thead>
-        <tr><th>Name</th><th>Category</th><th>Habitat</th><th>Status</th></tr>
+        <tr>
+          <th class="num">Plate</th>
+          <th>Specimen</th>
+          <th>Diet</th>
+          <th>Habitat</th>
+          <th>Submitted</th>
+          <th>Status</th>
+        </tr>
       </thead>
       <tbody>
-        <?php if (count($recent) === 0): ?>
-          <tr><td colspan="4" class="table-empty">No species yet — <a href="add_species.php">add one</a>.</td></tr>
-        <?php else: foreach ($recent as $s):
-          $status = $s->approval_status ?? 'approved';
+        <?php foreach ($pending as $s):
+          $sid    = (string) $s->_id;
+          $plate  = plate_num($s->_id);
+          $when   = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
+                  ? $s->created_at->toDateTime()->format('j M') : '—';
+          $img    = $s->image_url ?? '';
         ?>
           <tr>
-            <td><strong><?= htmlspecialchars($s->name ?? '') ?></strong>
-                <br><em style="color:var(--slate-500);font-size:.8rem"><?= htmlspecialchars($s->scientific_name ?? '') ?></em></td>
+            <td class="num"><span class="plate">№<?= $plate ?></span></td>
+            <td>
+              <div class="spec">
+                <div class="thumb">
+                  <?php if ($img): ?>
+                    <div class="img" style="background-image:url('<?= htmlspecialchars($img) ?>')"></div>
+                  <?php endif; ?>
+                </div>
+                <div class="name">
+                  <a class="common" href="../species_detail.php?id=<?= urlencode($sid) ?>" target="_blank" style="color:inherit;text-decoration:none">
+                    <?= htmlspecialchars($s->name ?? 'Unknown') ?>
+                  </a>
+                  <div class="latin"><?= htmlspecialchars($s->scientific_name ?? '') ?></div>
+                </div>
+              </div>
+            </td>
             <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
             <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
-            <td><span class="badge status-<?= htmlspecialchars($status) ?>"><?= htmlspecialchars(ucfirst($status)) ?></span></td>
+            <td class="when"><?= htmlspecialchars($when) ?></td>
+            <td><span class="status" data-s="pending">Pending</span></td>
           </tr>
-        <?php endforeach; endif; ?>
+        <?php endforeach; ?>
       </tbody>
     </table>
-  </div>
+  <?php endif; ?>
+</section>
 
-  <div class="panel">
-    <div class="panel-header">
-      <h2>Recent activity</h2>
+<section class="panel" style="border-right:0;padding:32px 0;border-top:1px solid var(--rule-soft)">
+  <div class="panel-head">
+    <h2 style="font-family:var(--serif);font-size:28px;letter-spacing:-.01em;margin:0;color:var(--ink)">Recently published.</h2>
+    <div class="tools">
+      <a href="manage_species.php">Manage all species →</a>
     </div>
-    <ul class="activity-list">
-      <?php if (count($activity) === 0): ?>
-        <li class="empty" style="display:block">No admin actions yet.</li>
-      <?php else: foreach ($activity as $a):
-        $action = $a->action ?? 'create';
-      ?>
-        <li>
-          <span class="icon <?= htmlspecialchars(activity_icon_class($action)) ?>">
-            <?= htmlspecialchars(activity_icon_glyph($action)) ?>
-          </span>
-          <div>
-            <strong><?= htmlspecialchars($a->actor_username ?? 'system') ?></strong>
-            <?= htmlspecialchars(activity_verb($action)) ?>
-            <?= htmlspecialchars($a->target_type ?? '') ?>
-            <strong><?= htmlspecialchars($a->target_name ?? '') ?></strong>
-            <div class="meta"><?= htmlspecialchars(format_when($a->created_at ?? null)) ?></div>
-          </div>
-        </li>
-      <?php endforeach; endif; ?>
-    </ul>
   </div>
-</div>
 
-<?php admin_layout_close();
+  <?php if (count($recent) === 0): ?>
+    <div style="padding:32px 0;font-family:var(--serif);font-style:italic;color:var(--ink-soft)">
+      No species published yet — <a href="add_species.php" style="color:var(--ink)">add the first one</a>.
+    </div>
+  <?php else: ?>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th class="num">Plate</th>
+          <th>Specimen</th>
+          <th>Diet</th>
+          <th>Habitat</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($recent as $s):
+          $sid    = (string) $s->_id;
+          $plate  = plate_num($s->_id);
+          $img    = $s->image_url ?? '';
+          $isEnd  = !empty($s->is_endangered);
+        ?>
+          <tr>
+            <td class="num"><span class="plate">№<?= $plate ?></span></td>
+            <td>
+              <div class="spec">
+                <div class="thumb">
+                  <?php if ($img): ?>
+                    <div class="img" style="background-image:url('<?= htmlspecialchars($img) ?>')"></div>
+                  <?php endif; ?>
+                </div>
+                <div class="name">
+                  <a class="common" href="edit_species.php?id=<?= urlencode($sid) ?>" style="color:inherit;text-decoration:none">
+                    <?= htmlspecialchars($s->name ?? 'Unknown') ?>
+                  </a>
+                  <div class="latin"><?= htmlspecialchars($s->scientific_name ?? '') ?></div>
+                </div>
+              </div>
+            </td>
+            <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
+            <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
+            <td><span class="status" data-s="approved"><?= $isEnd ? 'Endangered' : 'Approved' ?></span></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+</section>
+
+<?php admin_layout_close(); ?>

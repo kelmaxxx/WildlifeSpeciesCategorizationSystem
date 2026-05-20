@@ -7,68 +7,119 @@ $pending = $db->find(
     ['sort' => ['created_at' => -1]]
 );
 
+function plate_num($id): string {
+    return strtoupper(substr((string) $id, -3));
+}
+
 admin_layout_open('Pending Approvals', 'approvals');
 ?>
 
-<header class="page-header">
+<header class="admin-top">
   <div>
-    <h1>Pending approvals</h1>
-    <p class="subtitle">Review and approve (or reject) species submitted by users.</p>
+    <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
+      Editorial queue · awaiting review
+    </div>
+    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
+      Pending <i style="color:var(--oriole-deep)">approvals.</i>
+    </h1>
+    <p style="font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-soft);margin:12px 0 0;max-width:620px">
+      Each entry below was submitted by a contributor and is waiting on your decision to publish, hold, or reject.
+    </p>
   </div>
-  <a href="manage_species.php" class="btn ghost">All species &rarr;</a>
+  <a href="manage_species.php" class="btn btn-ghost" style="align-self:flex-start">All species →</a>
 </header>
 
-<div class="panel">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Submitted species</th>
-        <th>Category</th>
-        <th>Habitat</th>
-        <th>Submitted by</th>
-        <th>Submitted</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if (count($pending) === 0): ?>
-        <tr><td colspan="6" class="table-empty">Nothing pending — you're all caught up. &#127881;</td></tr>
-      <?php else: foreach ($pending as $s):
-        $sid = (string) $s->_id;
-        $uploader = isset($s->uploader_id) ? $db->findById('users', $s->uploader_id) : null;
-        $submitted = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
-                   ? $s->created_at->toDateTime()->format('M j, Y') : '—';
-      ?>
-        <tr>
-          <td>
-            <strong><?= htmlspecialchars($s->name ?? '') ?></strong>
-            <br><em style="color:var(--slate-500);font-size:.8rem"><?= htmlspecialchars($s->scientific_name ?? '') ?></em>
-          </td>
-          <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
-          <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
-          <td><?= $uploader ? htmlspecialchars($uploader->username) : '—' ?></td>
-          <td><?= htmlspecialchars($submitted) ?></td>
-          <td>
-            <div class="actions">
-              <a class="view" href="edit_species.php?id=<?= urlencode($sid) ?>">View</a>
-              <form method="POST" action="approval_action.php" style="display:inline">
-                <?= csrf_field() ?>
-                <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
-                <input type="hidden" name="decision" value="approve">
-                <button type="submit" class="approve">Approve</button>
-              </form>
-              <form method="POST" action="approval_action.php" style="display:inline">
-                <?= csrf_field() ?>
-                <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
-                <input type="hidden" name="decision" value="reject">
-                <button type="submit" class="reject">Reject</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-      <?php endforeach; endif; ?>
-    </tbody>
-  </table>
-</div>
+<section class="panel" style="border-right:0;padding:32px 0">
+  <div class="panel-head">
+    <h2 style="font-family:var(--serif);font-size:28px;letter-spacing:-.01em;margin:0;color:var(--ink)">Queue.</h2>
+    <div class="tools">
+      <span class="count"><?= count($pending) ?> waiting</span>
+    </div>
+  </div>
 
-<?php admin_layout_close();
+  <?php if (count($pending) === 0): ?>
+    <div style="padding:48px 0;text-align:center">
+      <div style="font-family:var(--serif);font-size:22px;font-style:italic;color:var(--ink-soft);margin-bottom:8px">
+        Inbox zero.
+      </div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em">
+        Nothing pending — you're all caught up.
+      </div>
+    </div>
+  <?php else: ?>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th class="num">Plate</th>
+          <th>Specimen</th>
+          <th>Diet</th>
+          <th>Habitat</th>
+          <th>Contributor</th>
+          <th>Submitted</th>
+          <th style="text-align:right">Decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($pending as $s):
+          $sid = (string) $s->_id;
+          $plate = plate_num($s->_id);
+          $uploader = isset($s->uploader_id) ? $db->findById('users', $s->uploader_id) : null;
+          $submitted = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
+                     ? $s->created_at->toDateTime()->format('j M Y') : '—';
+          $img = $s->image_url ?? '';
+        ?>
+          <tr>
+            <td class="num"><span class="plate">№<?= $plate ?></span></td>
+            <td>
+              <div class="spec">
+                <div class="thumb">
+                  <?php if ($img): ?>
+                    <div class="img" style="background-image:url('<?= htmlspecialchars($img) ?>')"></div>
+                  <?php endif; ?>
+                </div>
+                <div class="name">
+                  <a class="common" href="../species_detail.php?id=<?= urlencode($sid) ?>" target="_blank" style="color:inherit;text-decoration:none">
+                    <?= htmlspecialchars($s->name ?? 'Unknown') ?>
+                  </a>
+                  <div class="latin"><?= htmlspecialchars($s->scientific_name ?? '') ?></div>
+                </div>
+              </div>
+            </td>
+            <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
+            <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
+            <td class="who"><?= $uploader ? '<b>' . htmlspecialchars($uploader->username) . '</b>' : '—' ?></td>
+            <td class="when"><?= htmlspecialchars($submitted) ?></td>
+            <td style="text-align:right">
+              <div style="display:inline-flex;gap:8px;align-items:center">
+                <a href="edit_species.php?id=<?= urlencode($sid) ?>"
+                   style="font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border:1px solid var(--rule-soft);border-radius:6px;text-decoration:none">
+                  View
+                </a>
+                <form method="POST" action="approval_action.php" style="display:inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
+                  <input type="hidden" name="decision" value="approve">
+                  <button type="submit"
+                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:0;border-radius:6px;background:var(--ink);color:var(--paper);cursor:pointer">
+                    Approve
+                  </button>
+                </form>
+                <form method="POST" action="approval_action.php" style="display:inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="id" value="<?= htmlspecialchars($sid) ?>">
+                  <input type="hidden" name="decision" value="reject">
+                  <button type="submit"
+                          style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:6px 12px;border:1px solid var(--berry);border-radius:6px;background:transparent;color:var(--berry);cursor:pointer">
+                    Reject
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+</section>
+
+<?php admin_layout_close(); ?>
