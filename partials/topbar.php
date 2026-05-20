@@ -14,7 +14,7 @@ function nav_active(string $file, string $current): string {
 <header class="bar">
   <div class="frame bar-inner">
     <a href="index.php" class="brand" aria-label="Wildlife Species Categorization System — home">
-      <span class="mark" aria-hidden="true"></span>
+      <img class="logo" src="images/logo.svg" alt="" aria-hidden="true">
       <span class="brand-text">
         <span class="wordmark">Wildlife Species Categorization System</span>
         <span class="wordmark-short">WSCS</span>

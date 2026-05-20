@@ -26,16 +26,14 @@ header.bar {
 }
 .bar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand .logo {
+  width: 32px; height: 32px; display: block; flex-shrink: 0;
+  border-radius: 50%;
+}
 .brand .mark {
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--forest);
-  position: relative; flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.brand .mark::after {
-  content: ""; width: 10px; height: 10px; border-radius: 50%;
-  background: var(--mint); display: block;
-  box-shadow: inset 0 0 0 2px var(--forest);
+  flex-shrink: 0;
 }
 .brand .brand-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
 .brand .wordmark {
@@ -61,11 +59,29 @@ nav.primary a.active::after {
   height: 2px; background: var(--forest);
 }
 .nav-cta {
-  font-size: 13px; color: var(--paper); background: var(--forest);
-  padding: 8px 16px; border-radius: 999px; transition: all 0.15s ease;
-  border: 1px solid var(--forest);
+  font-size: 13.5px; font-weight: 600; line-height: 1;
+  color: #ffffff; background: var(--forest-deep);
+  padding: 10px 20px; border-radius: 999px;
+  transition: all 0.15s ease;
+  border: 1px solid var(--forest-deep);
+  letter-spacing: 0.005em;
+  display: inline-flex; align-items: center;
 }
-.nav-cta:hover { background: var(--forest-deep); border-color: var(--forest-deep); color: #fff; }
+.nav-cta:hover {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+body[data-theme="forest"] .nav-cta {
+  color: #0e1611;
+  background: var(--leaf);
+  border-color: var(--leaf);
+}
+body[data-theme="forest"] .nav-cta:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0e1611;
+}
 @media (max-width: 760px) {
   nav.primary { gap: 14px; }
   nav.primary a:not(.nav-cta) { display: none; }
@@ -74,7 +90,7 @@ nav.primary a.active::after {
 /* ── 2. Hero ────────────────────────────────────────────────────────────── */
 .hero {
   position: relative; width: 100%;
-  min-height: 600px; height: calc(100vh - 64px); max-height: 760px;
+  min-height: 620px;
   overflow: hidden; color: #f4f6f0; isolation: isolate;
   border-bottom: 1px solid var(--rule);
 }
@@ -100,9 +116,9 @@ nav.primary a.active::after {
       rgba(10,24,15,0.55) 100%);
 }
 .hero-inner {
-  position: relative; height: 100%;
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding-top: 56px; padding-bottom: 40px;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: 72px; padding-bottom: 72px; min-height: 620px;
 }
 .hero-text { max-width: 760px; }
 .hero h1.display {
@@ -133,7 +149,8 @@ nav.primary a.active::after {
 }
 .hero-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--forest); }
 @media (max-width: 760px) {
-  .hero { min-height: 540px; height: auto; padding-bottom: 40px; }
+  .hero { min-height: 560px; }
+  .hero-inner { min-height: 560px; padding-top: 56px; padding-bottom: 56px; }
   .hero::before { background-position: 70% center; }
 }
 
@@ -313,6 +330,9 @@ footer.site-foot {
   flex-wrap: wrap;
 }
 .foot-brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 16px; color: var(--ink); }
+.foot-brand .logo {
+  width: 22px; height: 22px; display: block; border-radius: 50%;
+}
 .foot-brand .mark {
   width: 18px; height: 18px; border-radius: 50%; background: var(--forest);
 }

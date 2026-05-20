@@ -47,14 +47,14 @@ body { min-height: 100vh; }
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px;
 }
-.plate-brand { display: flex; align-items: baseline; gap: 10px; color: #fbfdf9; }
+.plate-brand { display: flex; align-items: center; gap: 10px; color: #fbfdf9; }
+.plate-brand .logo {
+  width: 28px; height: 28px; display: block; flex-shrink: 0;
+  border-radius: 50%; background: rgba(251,253,249,0.9);
+}
 .plate-brand .mark {
   width: 22px; height: 22px; border: 1.5px solid #fbfdf9;
-  border-radius: 50%; position: relative; align-self: center;
-}
-.plate-brand .mark::after {
-  content: ""; position: absolute; inset: 4px;
-  background: var(--forest); border-radius: 50%;
+  border-radius: 50%; align-self: center;
 }
 .plate-brand .wordmark { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; }
 .plate-brand .tag {

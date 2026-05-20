@@ -60,7 +60,7 @@ $page_title = 'Editor sign-in — WSCS';
   <aside class="auth-plate">
     <div class="plate-top">
       <a href="../index.php" class="plate-brand" aria-label="Wildlife Species Categorization System — home">
-        <span class="mark" aria-hidden="true"></span>
+        <img class="logo" src="../images/logo.svg" alt="" aria-hidden="true">
         <span class="wordmark">WSCS</span>
         <span class="tag">Admin</span>
       </a>

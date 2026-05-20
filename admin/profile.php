@@ -58,8 +58,8 @@ admin_layout_open('My Profile', 'profile');
     <div class="eyebrow" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mute)">
       Editor's desk · your account
     </div>
-    <h1 class="display" style="font-family:var(--serif);font-size:48px;line-height:1;letter-spacing:-.015em;margin:8px 0 0;color:var(--ink)">
-      <i style="color:var(--oriole-deep)">Profile.</i>
+    <h1 class="display" style="font-family:var(--serif);font-size:44px;line-height:1.05;letter-spacing:-.018em;margin:8px 0 0;color:var(--ink);font-weight:500">
+      <i style="color:var(--forest-deep)">Profile.</i>
     </h1>
     <p style="font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);margin:10px 0 0">
       Update your username, or change your password.

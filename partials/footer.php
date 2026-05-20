@@ -1,7 +1,7 @@
 <footer class="site-foot">
   <div class="frame foot-inner">
     <div class="foot-brand">
-      <span class="mark" aria-hidden="true"></span>
+      <img class="logo" src="images/logo.svg" alt="" aria-hidden="true">
       <span>Wildlife Species Categorization System</span>
     </div>
     <div class="foot-meta">

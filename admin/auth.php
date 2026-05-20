@@ -82,7 +82,7 @@ function admin_layout_open(string $title, string $active = ''): void
 <div class="admin">
   <aside class="sidebar">
     <a href="dashboard.php" class="sb-brand">
-      <span class="mark" aria-hidden="true"></span>
+      <img class="logo" src="../images/logo.svg" alt="" aria-hidden="true">
       <span class="wordmark">WSCS</span>
       <span class="role">Admin</span>
     </a>
