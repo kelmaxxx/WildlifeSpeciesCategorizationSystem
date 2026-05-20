@@ -6,57 +6,133 @@ $me = Mongo::oid($_SESSION['user_id']);
 $submissions = $me ? $db->find('species', ['uploader_id' => $me], ['sort' => ['created_at' => -1]]) : [];
 
 $justSubmitted = isset($_GET['submitted']);
+
+$counts = [
+    'pending'  => 0,
+    'approved' => 0,
+    'rejected' => 0,
+];
+foreach ($submissions as $s) {
+    $st = $s->approval_status ?? 'pending';
+    if (isset($counts[$st])) $counts[$st]++;
+}
+
+function plate_num($id): string {
+    return strtoupper(substr((string) $id, -3));
+}
+
+$page_title = 'My submissions — Wildlife Catalog';
+$page_css   = ['admin.css'];
+include __DIR__ . '/partials/head.php';
+include __DIR__ . '/partials/topbar.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <?php $title='My Submissions · Wildlife Explorer'; $css=['public','admin']; include __DIR__ . '/partials/head.php'; ?>
-</head>
-<body>
 
-<?php $topbar_active = 'submissions'; include __DIR__ . '/partials/topbar.php'; ?>
+<section class="frame">
+  <div class="crumb">
+    <a href="index.php">Catalog</a>
+    <span class="sep">/</span>
+    <span class="here">My submissions</span>
+  </div>
 
-<main style="max-width:1000px;margin:2rem auto;padding:0 1.5rem 4rem">
-  <h1 style="margin-bottom:.25rem">My submissions</h1>
-  <p style="color:var(--slate-500);margin-top:0">Track the approval status of species you've submitted.</p>
+  <div class="page-head">
+    <div>
+      <div class="eyebrow">Contributor desk</div>
+      <h1 class="display">Your <i class="accent">submissions.</i></h1>
+    </div>
+    <p class="intro">
+      Every species you've sent to the catalog, with its current editorial status.
+      Pending entries are awaiting review; approved ones are live on the public index.
+    </p>
+  </div>
 
   <?php if ($justSubmitted): ?>
-    <div class="alert info">&#10003; Your submission was received and is now pending admin review.</div>
+    <div class="alert info" style="margin-bottom:24px">
+      ✓ Your submission was received and is now <b>pending</b> editorial review.
+    </div>
   <?php endif; ?>
 
-  <div class="panel" style="margin-top:1.5rem">
-    <table class="table">
+  <div class="stats" style="margin-bottom:32px">
+    <div class="stat">
+      <div class="num"><?= count($submissions) ?></div>
+      <div class="label">Total submitted</div>
+      <div class="delta">All time</div>
+    </div>
+    <div class="stat">
+      <div class="num"><?= $counts['pending'] ?></div>
+      <div class="label">Pending review</div>
+      <div class="delta" style="color:var(--status-vuln)">Awaiting editor</div>
+    </div>
+    <div class="stat">
+      <div class="num"><?= $counts['approved'] ?></div>
+      <div class="label">Approved</div>
+      <div class="delta" style="color:var(--status-stable)">Live in catalog</div>
+    </div>
+    <div class="stat">
+      <div class="num"><?= $counts['rejected'] ?></div>
+      <div class="label">Rejected</div>
+      <div class="delta" style="color:var(--berry)">Needs revision</div>
+    </div>
+  </div>
+
+  <?php if (count($submissions) === 0): ?>
+    <div class="empty-state" style="padding:64px 0">
+      <div class="placeholder" style="height:240px">
+        <div>No submissions yet.</div>
+        <div style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);letter-spacing:0;text-transform:none;margin-top:6px">
+          When you contribute a species, it will appear here.
+        </div>
+        <a href="submit_species.php" class="btn btn-primary" style="margin-top:18px">
+          Contribute a specimen <span class="arrow" aria-hidden="true"></span>
+        </a>
+      </div>
+    </div>
+  <?php else: ?>
+    <table class="tbl">
       <thead>
-        <tr><th>Species</th><th>Category</th><th>Habitat</th><th>Submitted</th><th>Status</th></tr>
+        <tr>
+          <th class="num">Plate</th>
+          <th>Specimen</th>
+          <th>Diet</th>
+          <th>Habitat</th>
+          <th>Submitted</th>
+          <th>Status</th>
+        </tr>
       </thead>
       <tbody>
-        <?php if (count($submissions) === 0): ?>
-          <tr><td colspan="5" class="table-empty">
-            You haven't submitted anything yet. <a href="submit_species.php">Submit your first species</a>.
-          </td></tr>
-        <?php else: foreach ($submissions as $s):
+        <?php foreach ($submissions as $s):
           $status = $s->approval_status ?? 'pending';
           $sid    = (string) $s->_id;
+          $plate  = plate_num($s->_id);
           $when   = ($s->created_at ?? null) instanceof MongoDB\BSON\UTCDateTime
-                  ? $s->created_at->toDateTime()->format('M j, Y') : '—';
+                  ? $s->created_at->toDateTime()->format('j M Y') : '—';
+          $img    = $s->image_url ?? '';
         ?>
           <tr>
+            <td class="num"><span class="plate">№<?= $plate ?></span></td>
             <td>
-              <a href="species_detail.php?id=<?= urlencode($sid) ?>">
-                <strong><?= htmlspecialchars($s->name ?? '') ?></strong>
-              </a>
-              <br><em style="color:var(--slate-500);font-size:.8rem"><?= htmlspecialchars($s->scientific_name ?? '') ?></em>
+              <div class="spec">
+                <div class="thumb">
+                  <?php if ($img): ?>
+                    <div class="img" style="background-image:url('<?= htmlspecialchars($img) ?>')"></div>
+                  <?php endif; ?>
+                </div>
+                <div class="name">
+                  <a class="common" href="species_detail.php?id=<?= urlencode($sid) ?>" style="color:inherit;text-decoration:none">
+                    <?= htmlspecialchars($s->name ?? 'Unknown') ?>
+                  </a>
+                  <div class="latin"><?= htmlspecialchars($s->scientific_name ?? '') ?></div>
+                </div>
+              </div>
             </td>
             <td><?= htmlspecialchars($s->category_name ?? '—') ?></td>
             <td><?= htmlspecialchars($s->habitat_name ?? '—') ?></td>
-            <td><?= htmlspecialchars($when) ?></td>
-            <td><span class="badge status-<?= htmlspecialchars($status) ?>"><?= htmlspecialchars(ucfirst($status)) ?></span></td>
+            <td class="when"><?= htmlspecialchars($when) ?></td>
+            <td><span class="status" data-s="<?= htmlspecialchars($status) ?>"><?= htmlspecialchars(ucfirst($status)) ?></span></td>
           </tr>
-        <?php endforeach; endif; ?>
+        <?php endforeach; ?>
       </tbody>
     </table>
-  </div>
-</main>
+  <?php endif; ?>
+</section>
 
-</body>
-</html>
+<?php include __DIR__ . '/partials/footer.php'; ?>
