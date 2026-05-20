@@ -13,7 +13,7 @@ admin_layout_open('Pending Approvals', 'approvals');
 <header class="page-header">
   <div>
     <h1>Pending approvals</h1>
-    <p class="subtitle">Review and approve (or reject) species submitted by uploaders &amp; users.</p>
+    <p class="subtitle">Review and approve (or reject) species submitted by users.</p>
   </div>
   <a href="manage_species.php" class="btn ghost">All species &rarr;</a>
 </header>

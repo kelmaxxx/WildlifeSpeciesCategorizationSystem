@@ -136,7 +136,7 @@ wildlife_categorization/
 ```js
 // users
 { _id, username, password (hashed),
-  role: "admin" | "uploader" | "user",
+  role: "admin" | "user",
   created_at }
 
 // categories

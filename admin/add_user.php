@@ -2,7 +2,7 @@
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/lib/activity.php';
 
-$ROLES = ['admin', 'uploader', 'user'];
+$ROLES = ['admin', 'user'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
@@ -37,7 +37,7 @@ admin_layout_open('Add User', 'users');
 <header class="page-header">
   <div>
     <h1>Add new user</h1>
-    <p class="subtitle">Create a login for an admin, uploader, or regular user.</p>
+    <p class="subtitle">Create a login for an admin or regular user.</p>
   </div>
   <a href="manage_users.php" class="btn ghost">&larr; Back</a>
 </header>
@@ -62,9 +62,8 @@ admin_layout_open('Add User', 'users');
         <?php foreach ($ROLES as $r): ?>
           <option value="<?= $r ?>" <?= ($_POST['role'] ?? 'user') === $r ? 'selected' : '' ?>>
             <?= ucfirst($r) ?> — <?= [
-              'admin'    => 'full catalog access',
-              'uploader' => 'submit species for approval',
-              'user'     => 'browse + submit species',
+              'admin' => 'full catalog access',
+              'user'  => 'browse + submit species',
             ][$r] ?>
           </option>
         <?php endforeach; ?>

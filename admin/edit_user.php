@@ -2,7 +2,7 @@
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/lib/activity.php';
 
-$ROLES = ['admin', 'uploader', 'user'];
+$ROLES = ['admin', 'user'];
 
 $id   = Mongo::oid($_GET['id'] ?? null);
 $user = $id ? $db->findById('users', $id) : null;

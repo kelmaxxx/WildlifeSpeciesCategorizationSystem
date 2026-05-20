@@ -35,13 +35,11 @@
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  min-height: 360px;
-  padding: 5rem 1.5rem 4rem;
+  min-height: 640px;
+  padding: 6rem 1.5rem 5rem;
   text-align: center;
-  color: white;
-  background:
-    linear-gradient(135deg, rgba(20,83,45,.78), rgba(31,122,59,.55)),
-    url('../../images/wl2.jpg') center/cover;
+  color: #ffffff;
+  background: url('../../images/wildlife.jpg') center/cover no-repeat;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
   box-shadow: var(--shadow);
@@ -50,12 +48,13 @@
   font-size: clamp(2rem, 4vw, 3.2rem);
   margin: 0 0 .5rem;
   letter-spacing: -.5px;
+  color: #ffffff;
 }
 .hero p {
   margin: 0 auto;
   max-width: 580px;
-  opacity: .92;
   font-size: 1.05rem;
+  color: #ffffff;
 }
 .hero .stats {
   display: flex;
@@ -64,8 +63,8 @@
   margin-top: 2rem;
   flex-wrap: wrap;
 }
-.hero .stats div { font-size: .85rem; opacity: .9; }
-.hero .stats strong { display: block; font-size: 1.6rem; }
+.hero .stats div     { font-size: .85rem; color: #ffffff; }
+.hero .stats strong  { display: block; font-size: 1.6rem; color: #ffffff; }
 
 /* ---------- Search & filters ---------- */
 .controls {
