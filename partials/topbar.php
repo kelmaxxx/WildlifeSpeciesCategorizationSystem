@@ -1,39 +1,58 @@
 <?php
-/**
- * Shared public topbar.
- *   $topbar_active — optional: 'submit' | 'submissions'. Hides that nav item
- *                    (so a user already on the submit page doesn't see a
- *                    "Submit species" button pointing back at the same page).
- *   $topbar_show_greeting — default false. Set to true on the home page.
- *   $topbar_browse_href   — default 'index.php'. The home page overrides this
- *                           to '#species' so Browse scrolls to the grid.
+/* partials/topbar.php — sticky public navigation
+ * Uses the project's existing flat session keys: user_id / user_name / user_role.
  */
-$topbar_active        = $topbar_active        ?? '';
-$topbar_show_greeting = $topbar_show_greeting ?? false;
-$topbar_browse_href   = $topbar_browse_href   ?? 'index.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+$loggedIn = !empty($_SESSION['user_id']);
+$userName = $_SESSION['user_name'] ?? '';
+$userRole = $_SESSION['user_role'] ?? '';
+$current  = basename($_SERVER['PHP_SELF']);
+function nav_active(string $file, string $current): string {
+    return $file === $current ? ' active' : '';
+}
 ?>
-<header class="topbar">
-  <div class="brand">
-    <span class="logo">&#127757;</span>
-    Wildlife Explorer
+<header class="bar">
+  <div class="frame bar-inner">
+    <a href="index.php" class="brand" aria-label="Wildlife Species Categorization System — home">
+      <img class="logo" src="images/logo.svg" alt="" aria-hidden="true">
+      <span class="brand-text">
+        <span class="wordmark">Wildlife Species Categorization System</span>
+        <span class="wordmark-short">WSCS</span>
+      </span>
+    </a>
+    <nav class="primary">
+      <a href="index.php" class="a<?= nav_active('index.php', $current) ?>">Browse</a>
+      <a href="submit_species.php" class="a<?= nav_active('submit_species.php', $current) ?>">Submit</a>
+      <?php if ($loggedIn): ?>
+        <a href="my_submissions.php" class="a<?= nav_active('my_submissions.php', $current) ?>">My submissions</a>
+        <?php if ($userRole === 'admin'): ?>
+          <a href="admin/dashboard.php" class="a">Admin</a>
+        <?php endif; ?>
+        <a href="logout.php" class="nav-cta">Sign out · <?= htmlspecialchars($userName) ?></a>
+      <?php else: ?>
+        <a href="login.php" class="nav-cta">Sign in</a>
+      <?php endif; ?>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light or forest theme" title="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+      </button>
+    </nav>
   </div>
-  <nav>
-    <a class="btn ghost" href="<?= htmlspecialchars($topbar_browse_href) ?>">Browse</a>
-    <?php if (!empty($_SESSION['user_id'])): ?>
-      <?php if ($topbar_show_greeting): ?>
-        <span class="greeting">Hi, <strong><?= htmlspecialchars($_SESSION['user_name'] ?? '') ?></strong></span>
-      <?php endif; ?>
-      <?php if ($topbar_active !== 'submissions'): ?>
-        <a class="btn ghost" href="my_submissions.php">My submissions</a>
-      <?php endif; ?>
-      <?php if ($topbar_active !== 'submit'): ?>
-        <a class="btn" href="submit_species.php">Submit species</a>
-      <?php endif; ?>
-      <a class="btn ghost" href="logout.php">Logout</a>
-    <?php else: ?>
-      <a class="btn ghost" href="login.php">Sign in</a>
-      <a class="btn ghost" href="register.php">Register</a>
-      <a class="btn" href="admin/login.php">Admin</a>
-    <?php endif; ?>
-  </nav>
 </header>
+<script>
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var body = document.body;
+      var next = (body.getAttribute('data-theme') === 'forest') ? 'light' : 'forest';
+      body.setAttribute('data-theme', next);
+      try { localStorage.setItem('wscs-theme', next); } catch (e) {}
+    });
+  })();
+</script>

@@ -1,7 +1,8 @@
 <?php
-/* partials/head.php — head snippet
- * Loads fonts + base styles and applies the saved light/forest theme
- * before paint to avoid a flash.
+/* partials/head-bare.php — head fragment for auth screens
+ *
+ * Like head.php but does NOT include the topbar.
+ * Pages that include this MUST close </body></html> themselves.
  */
 ?>
 <!DOCTYPE html>
@@ -11,13 +12,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($page_title ?? 'Wildlife Species Categorization System') ?></title>
 
-  <!-- Type stack: Inter (sans), Fraunces (display serif), IBM Plex Mono (mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/public.css">
   <?php if (!empty($page_css)): foreach ($page_css as $css): ?>
     <link rel="stylesheet" href="assets/css/<?= htmlspecialchars($css) ?>">
   <?php endforeach; endif; ?>
@@ -27,7 +26,6 @@
       var saved = null;
       try { saved = localStorage.getItem('wscs-theme'); } catch (e) {}
       var theme = (saved === 'forest' || saved === 'light') ? saved : 'light';
-      document.documentElement.setAttribute('data-theme-pref', theme);
       document.addEventListener('DOMContentLoaded', function () {
         document.body.setAttribute('data-theme', theme);
       });

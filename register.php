@@ -9,12 +9,14 @@ if (!empty($_SESSION['user_id'])) {
 }
 
 $error = null;
+$old   = ['username' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm  = $_POST['confirm']  ?? '';
+    $old['username'] = $username;
 
     if ($username === '' || $password === '') {
         $error = 'Username and password are required.';
@@ -41,47 +43,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
+$page_title = 'Create account — WSCS';
+$page_css   = ['auth.css'];
+include __DIR__ . '/partials/head-bare.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <?php $title='Register · Wildlife Explorer'; $css=['auth']; include __DIR__ . '/partials/head.php'; ?>
-</head>
-<body>
-<div class="auth-wrap">
-  <div class="auth-card">
-    <div class="logo-lg">&#127757;</div>
-    <h1>Create your account</h1>
-    <p class="lead">Join Wildlife Explorer to submit species and track conservation.</p>
 
-    <?php if ($error): ?>
-      <div class="alert error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+<div class="auth-shell" data-mode="signup">
+  <aside class="auth-plate">
+    <div class="plate-top">
+      <a href="index.php" class="plate-brand" aria-label="Wildlife Species Categorization System — home">
+        <img class="logo" src="images/logo.svg" alt="" aria-hidden="true">
+        <span class="wordmark">WSCS</span>
+      </a>
+    </div>
+    <div class="plate-bot">
+      <h2>A community<br>of <i>contributors.</i></h2>
+      <blockquote>
+        Each entry begins with a single observer — patient, curious, willing to put their name to what they saw. Without contributors, the catalog is only a list.
+      </blockquote>
+    </div>
+  </aside>
 
-    <form method="POST">
-      <?= csrf_field() ?>
-      <div class="form-row">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autofocus
-               value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
-      </div>
-      <div class="form-row">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-        <span class="hint">at least 6 characters</span>
-      </div>
-      <div class="form-row">
-        <label for="confirm">Confirm password</label>
-        <input type="password" id="confirm" name="confirm" required>
-      </div>
-      <button type="submit" class="btn" style="width:100%;justify-content:center;padding:.7rem">Create account</button>
-    </form>
+  <section class="auth-form-col">
+    <div class="auth-top-right">
+      <a href="index.php">← Back to browse</a>
+    </div>
 
-    <p class="auth-footer">
-      Already have an account? <a href="login.php">Sign in</a><br>
-      <a href="index.php">&larr; Back to public site</a>
-    </p>
-  </div>
+    <div class="auth-card">
+      <div class="auth-eyebrow"><span class="num">Member access</span></div>
+
+      <div class="auth-tabs" role="tablist">
+        <a href="login.php"    data-on="0">Sign in</a>
+        <a href="register.php" data-on="1">Create account</a>
+      </div>
+
+      <h1>Join WSCS<span class="period">.</span></h1>
+      <p class="sub">Take a minute to create an account. Once you're in, you can submit a species and watch its journey from pending to published.</p>
+
+      <?php if ($error): ?>
+        <div class="alert error" style="margin-bottom:18px"><?= htmlspecialchars($error) ?></div>
+      <?php endif; ?>
+
+      <form class="auth-form" method="post" action="register.php" novalidate>
+        <?= csrf_field() ?>
+
+        <div class="field">
+          <label for="signup-username">Username</label>
+          <input id="signup-username" name="username" type="text" value="<?= htmlspecialchars($old['username']) ?>"
+                 placeholder="your_handle" required autofocus autocomplete="username">
+          <span class="helper">Used as the byline on species you contribute.</span>
+        </div>
+
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" name="password" type="password" placeholder="At least 6 characters"
+                 required autocomplete="new-password">
+          <div class="meter" id="meter" data-score="0"><i></i><i></i><i></i><i></i></div>
+          <span class="helper" id="meter-helper">Mix letters, numbers, and a symbol for a stronger key.</span>
+        </div>
+
+        <div class="field">
+          <label for="signup-confirm">Confirm password</label>
+          <input id="signup-confirm" name="confirm" type="password" placeholder="Re-enter your password"
+                 required autocomplete="new-password">
+        </div>
+
+        <div class="submit-block">
+          <button type="submit" class="btn btn-primary">
+            Create account <span class="arrow" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+
+      <div class="auth-foot">
+        <a href="login.php">← Already a member? Sign in</a>
+        <a href="index.php">Browse without an account</a>
+      </div>
+    </div>
+  </section>
 </div>
+
+<script src="assets/js/password-meter.js"></script>
+
 </body>
 </html>

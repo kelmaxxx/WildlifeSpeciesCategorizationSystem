@@ -21,7 +21,7 @@ if (!$confirmed) {
       <?php $title='Seed database'; $css=['public']; include __DIR__ . '/partials/head.php'; ?>
     </head>
     <body>
-    <div style="max-width:640px;margin:4rem auto;padding:2rem;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);font-family:Inter,sans-serif">
+    <div style="max-width:640px;margin:4rem auto;padding:2rem;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);font-family:'Google Sans',sans-serif">
       <h1 style="margin-top:0;color:#92400e">&#9888; Reset the wildlife database?</h1>
       <p style="color:#475569">
         This will <strong>drop every collection</strong> (users, categories, habitats,
@@ -63,9 +63,9 @@ $db->insert('users', [
     'created_at' => new MongoDB\BSON\UTCDateTime(),
 ]);
 $db->insert('users', [
-    'username'   => 'uploader_jane',
+    'username'   => 'user_jane',
     'password'   => password_hash('password123', PASSWORD_DEFAULT),
-    'role'       => 'uploader',
+    'role'       => 'user',
     'created_at' => new MongoDB\BSON\UTCDateTime(),
 ]);
 
@@ -182,12 +182,12 @@ foreach ($speciesSeed as [$name, $sci, $endangered, $catSqlId, $habSqlId]) {
   <?php $title='Seed complete'; $css=['public']; include __DIR__ . '/partials/head.php'; ?>
 </head>
 <body>
-<div style="max-width:640px;margin:4rem auto;padding:2rem;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);font-family:Inter,sans-serif">
+<div style="max-width:640px;margin:4rem auto;padding:2rem;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);font-family:'Google Sans',sans-serif">
   <h1 style="margin-top:0;color:#14532d">&#10003; Seed complete</h1>
   <p style="color:#64748b">MongoDB has been populated with the original SQL dataset.</p>
   <table style="width:100%;border-collapse:collapse;margin:1rem 0">
     <tr><td style="padding:.5rem;border-bottom:1px solid #f1f5f9;font-weight:600">users</td>
-        <td style="padding:.5rem;border-bottom:1px solid #f1f5f9">2 (admin / admin123, uploader_jane / password123)</td></tr>
+        <td style="padding:.5rem;border-bottom:1px solid #f1f5f9">2 (admin / admin123, user_jane / password123)</td></tr>
     <tr><td style="padding:.5rem;border-bottom:1px solid #f1f5f9;font-weight:600">categories</td>
         <td style="padding:.5rem;border-bottom:1px solid #f1f5f9"><?= count($catSeed) ?></td></tr>
     <tr><td style="padding:.5rem;border-bottom:1px solid #f1f5f9;font-weight:600">habitats</td>

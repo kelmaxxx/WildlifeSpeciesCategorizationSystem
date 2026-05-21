@@ -8,11 +8,6 @@ if (!extension_loaded('mongodb')) {
          <a href='https://pecl.php.net/package/mongodb'>pecl.php.net/package/mongodb</a>.</p>");
 }
 
-/**
- * Lightweight wrapper around the low-level MongoDB driver so the rest of the
- * code can call $db->find('species', [...]) instead of dealing with
- * BulkWrite / Query objects everywhere.
- */
 class Mongo
 {
     private MongoDB\Driver\Manager $manager;

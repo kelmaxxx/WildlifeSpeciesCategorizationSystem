@@ -1,118 +1,232 @@
-/* base.css — variables, reset, typography, buttons, badges, alerts */
+/* ─────────────────────────────────────────────────────────────────────────
+ * base.css — Design tokens, typography utilities, reusable components
+ *
+ * Light theme: white surfaces + forest-green accents.
+ * Forest dark theme: applied via [data-theme="forest"] on <body>.
+ * Page-specific styles live in public.css / admin.css / auth.css / detail.css.
+ * ───────────────────────────────────────────────────────────────────────── */
 
-:root {
-  --green-900: #14532d;
-  --green-700: #1f7a3b;
-  --green-600: #2c8a4a;
-  --green-500: #3cb371;
-  --green-100: #e6f4ea;
-  --green-50:  #f3faf5;
-  --amber:     #f59e0b;
-  --amber-100: #fef3c7;
-  --amber-900: #92400e;
-  --rose:      #e11d48;
-  --rose-100:  #fee2e2;
-  --rose-900:  #991b1b;
-  --violet:    #7c3aed;
-  --violet-100:#ede9fe;
-  --violet-900:#5b21b6;
-  --slate-900: #0f172a;
-  --slate-700: #334155;
-  --slate-500: #64748b;
-  --slate-300: #cbd5e1;
-  --slate-100: #f1f5f9;
-  --slate-50:  #f8fafc;
-  --white:     #ffffff;
-  --shadow-sm: 0 1px 2px rgba(15,23,42,.06);
-  --shadow:    0 4px 16px rgba(15,23,42,.08);
-  --shadow-lg: 0 12px 40px rgba(15,23,42,.12);
-  --radius:    14px;
-  --radius-sm: 10px;
+:root,
+body[data-theme="light"] {
+  /* Surfaces — clean white system, no warm cream */
+  --paper:        #ffffff;
+  --surface:      #f7f8f5;
+  --surface-2:    #eef1ea;
+
+  /* Ink */
+  --ink:          #131a14;
+  --ink-soft:     #3b443c;
+  --ink-mute:     #6b7468;
+
+  /* Rules / borders */
+  --rule:         #d6dbcf;
+  --rule-soft:    #e7ebe0;
+
+  /* Forest greens — primary brand */
+  --forest:       #2f5d3b;
+  --forest-deep:  #1f4128;
+  --forest-soft:  #4c7b59;
+  --sage:         #7fa080;
+  --leaf:         #6ba36a;
+  --mint:         #e6f1e3;
+
+  /* Accent kept neutral; status colors stay readable */
+  --accent:       var(--forest);
+  --accent-deep:  var(--forest-deep);
+
+  /* Status (conservation) */
+  --status-stable: #3f7a48;
+  --status-vuln:   #b58a1f;
+  --status-end:    #b34a2b;
+  --status-crit:   #8b2c2c;
+
+  /* Type stacks — Inter + Fraunces + IBM Plex Mono
+     (deliberately not the Instrument-Serif + Geist pair) */
+  --serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
+  --sans:  'Inter', ui-sans-serif, -apple-system, system-ui, 'Segoe UI', sans-serif;
+  --mono:  'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(20,30,20,0.05);
+  --shadow:    0 4px 16px rgba(20,30,20,0.07);
+  --shadow-lg: 0 12px 40px rgba(20,30,20,0.12);
 }
 
+/* ── Forest (dark) theme ────────────────────────────────────────────────── */
+body[data-theme="forest"] {
+  --paper:        #0e1611;
+  --surface:      #15201a;
+  --surface-2:    #1d2a22;
+
+  --ink:          #e8efe4;
+  --ink-soft:     #c4cdbf;
+  --ink-mute:     #8a9388;
+
+  --rule:         #2a3a30;
+  --rule-soft:    #1f2b24;
+
+  --forest:       #6ba36a;
+  --forest-deep:  #88c187;
+  --forest-soft:  #4f7c57;
+  --sage:         #9fbf9c;
+  --leaf:         #88c187;
+  --mint:         #1c2a20;
+
+  --accent:       var(--forest);
+  --accent-deep:  var(--forest-deep);
+
+  --status-stable: #74b07c;
+  --status-vuln:   #d4b264;
+  --status-end:    #d97c5b;
+  --status-crit:   #c66363;
+}
+
+/* ── Reset & base ───────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: var(--slate-900);
-  background: var(--slate-50);
-  line-height: 1.5;
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background 0.25s ease, color 0.25s ease;
 }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
 
-a { color: var(--green-700); text-decoration: none; }
-a:hover { text-decoration: underline; }
+/* ── Typographic utilities ──────────────────────────────────────────────── */
+.display { font-family: var(--serif); font-weight: 500; letter-spacing: -0.018em; line-height: 1.02;
+           font-variation-settings: "SOFT" 30, "WONK" 0; }
+.display i, .display em { font-style: italic; }
+.eyebrow { font-family: var(--mono); text-transform: uppercase; font-size: 11px;
+           letter-spacing: 0.14em; color: var(--ink-mute); font-weight: 500; }
+.num     { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+.latin   { font-family: var(--serif); font-style: italic; font-weight: 400; }
 
-/* ---------- Buttons ---------- */
+/* ── Page frame ─────────────────────────────────────────────────────────── */
+.frame { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+@media (max-width: 760px) { .frame { padding: 0 20px; } }
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  padding: .55rem 1rem;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: var(--green-700);
-  color: white;
-  font-weight: 600;
-  font-size: .9rem;
-  cursor: pointer;
-  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
-  text-decoration: none;
+  appearance: none; border: 0; padding: 12px 20px; border-radius: 999px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px; transition: all 0.18s ease;
 }
-.btn:hover { background: var(--green-900); transform: translateY(-1px); box-shadow: var(--shadow); text-decoration: none; }
-.btn.ghost {
-  background: transparent;
-  color: var(--slate-700);
-  border-color: var(--slate-300);
+.btn-primary { background: var(--forest); color: #fff; }
+.btn-primary:hover { background: var(--forest-deep); color: #fff; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.btn-ghost:hover { border-color: var(--forest); color: var(--forest-deep); }
+.btn-danger { background: #8b2c2c; color: #fff; }
+.btn-danger:hover { background: #6a1e1e; }
+.arrow { width: 14px; height: 1px; background: currentColor; position: relative; }
+.arrow::after {
+  content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px;
+  border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
 }
-.btn.ghost:hover { background: var(--slate-100); color: var(--slate-900); }
-.btn.danger { background: var(--rose); }
-.btn.danger:hover { background: #be123c; }
-.btn.subtle { background: var(--green-100); color: var(--green-900); }
-.btn.subtle:hover { background: #d4ecd8; }
-.btn.amber  { background: var(--amber); }
-.btn.amber:hover  { background: #d97706; }
 
-/* ---------- Badges (status pills) ---------- */
+/* ── Badges (conservation, role, status) ────────────────────────────────── */
 .badge {
-  display: inline-block;
-  padding: .2rem .55rem;
-  border-radius: 999px;
-  font-size: .72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  background: var(--slate-100);
-  color: var(--slate-700);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.12em; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--rule); color: var(--ink-soft); background: transparent;
 }
-.badge.carnivore { background: var(--rose-100); color: var(--rose-900); }
-.badge.herbivore { background: #dcfce7; color: #166534; }
-.badge.omnivore  { background: var(--amber-100); color: var(--amber-900); }
-.badge.endangered{ background: var(--violet-100); color: var(--violet-900); }
-.badge.role-admin    { background: var(--green-100); color: var(--green-900); }
-.badge.role-uploader { background: var(--amber-100); color: var(--amber-900); }
-.badge.role-user     { background: var(--slate-100); color: var(--slate-700); }
-.badge.status-pending  { background: var(--amber-100); color: var(--amber-900); }
-.badge.status-approved { background: var(--green-100); color: var(--green-900); }
-.badge.status-rejected { background: var(--rose-100); color: var(--rose-900); }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-mute); }
+.badge.carnivore::before { background: var(--status-end); }
+.badge.herbivore::before { background: var(--sage); }
+.badge.omnivore::before  { background: var(--leaf); }
+.badge.stable::before     { background: var(--status-stable); }
+.badge.vulnerable::before { background: var(--status-vuln); }
+.badge.endangered::before { background: var(--status-end); }
+.badge.critical::before   { background: var(--status-crit); }
+.badge.role-admin { color: #fff; background: var(--forest); border-color: var(--forest); }
+.badge.role-admin::before { background: var(--mint); }
+.badge.status-pending::before  { background: var(--status-vuln); }
+.badge.status-approved::before { background: var(--status-stable); }
+.badge.status-rejected::before { background: #8b2c2c; }
 
-/* ---------- Alerts ---------- */
+/* ── Alerts ─────────────────────────────────────────────────────────────── */
 .alert {
-  padding: .75rem 1rem;
-  border-radius: 8px;
-  font-size: .9rem;
-  margin-bottom: 1rem;
+  padding: 14px 16px; border-radius: var(--r-md); border: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink); font-size: 14px;
+  display: flex; gap: 12px; align-items: start;
 }
-.alert.error { background: var(--rose-100); color: var(--rose-900); border: 1px solid #fecaca; }
-.alert.info  { background: var(--green-100); color: var(--green-900); border: 1px solid #bbe6c4; }
-.alert.warn  { background: var(--amber-100); color: var(--amber-900); border: 1px solid #fde68a; }
+.alert::before {
+  content: ""; flex-shrink: 0; width: 6px; align-self: stretch;
+  border-radius: 999px; background: var(--ink-mute);
+}
+.alert.info::before  { background: var(--forest); }
+.alert.warn::before  { background: var(--status-vuln); }
+.alert.error::before { background: #8b2c2c; }
+.alert.error { background: color-mix(in oklab, #8b2c2c 8%, var(--paper)); }
 
-/* ---------- Reduced-motion guard ---------- */
+/* ── Form fields (shared) ───────────────────────────────────────────────── */
+.form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.form-row label {
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--ink-mute);
+}
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="url"],
+.form-row input[type="number"],
+.form-row select,
+.form-row textarea {
+  font-family: var(--sans); font-size: 15px; color: var(--ink);
+  background: transparent; border: 0; border-bottom: 1px solid var(--rule);
+  padding: 10px 0 8px; outline: none; transition: border-color 0.15s ease;
+}
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus { border-bottom-color: var(--forest); }
+.form-row .hint { font-size: 12px; color: var(--ink-mute); }
+
+/* ── Focus rings ────────────────────────────────────────────────────────── */
+*:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+
+/* ── Theme toggle button (used in topbar) ───────────────────────────────── */
+.theme-toggle {
+  appearance: none; background: transparent; border: 1px solid var(--rule);
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-soft); transition: all 0.18s ease; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--forest); color: var(--forest); }
+.theme-toggle svg { width: 16px; height: 16px; display: block; }
+.theme-toggle .icon-sun  { display: none; }
+.theme-toggle .icon-moon { display: block; }
+body[data-theme="forest"] .theme-toggle .icon-sun  { display: block; }
+body[data-theme="forest"] .theme-toggle .icon-moon { display: none; }
+
+/* ── Token aliases (legacy names → forest palette) ──────────────────────── */
+:root,
+body[data-theme="light"] {
+  --cream:        var(--surface);
+  --cream-deep:   var(--surface-2);
+  --oriole:       var(--forest);
+  --oriole-deep:  var(--forest-deep);
+  --moss:         var(--forest-deep);
+  --berry:        #8b2c2c;
+}
+body[data-theme="forest"] {
+  --cream:        var(--surface);
+  --cream-deep:   var(--surface-2);
+  --oriole:       var(--forest);
+  --oriole-deep:  var(--forest-deep);
+  --moss:         var(--forest-deep);
+  --berry:        #c66363;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { transition-duration: 0.001s !important; animation-duration: 0.001s !important; }
 }
